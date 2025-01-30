@@ -17,7 +17,7 @@ const create = async (req: Request, res: Response) => {
   try {
     const { name, description } = req.matchedData;
 
-    console.log("------name------", name);
+    // console.log("------name------", name);
     console.log("------description------", description);
 
     console.log("-----icon-------", req.file);
