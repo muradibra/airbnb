@@ -9,6 +9,7 @@ import "./config/auth-strategy";
 
 import authRoutes from "./routes/auth";
 import categoryRoutes from "./routes/category";
+import listingRoutes from "./routes/listing";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -40,6 +41,7 @@ app.use(passport.session());
 app.use("/public", express.static("./public"));
 app.use("/auth", authRoutes);
 app.use("/category", categoryRoutes);
+app.use("listing", listingRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`server is running on port ${process.env.PORT}`);

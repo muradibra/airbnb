@@ -107,7 +107,7 @@ const listingSchema = new Schema({
         type: Date,
         required: true,
       },
-      guest: {
+      renter: {
         type: Types.ObjectId,
         ref: "User",
         required: true,
