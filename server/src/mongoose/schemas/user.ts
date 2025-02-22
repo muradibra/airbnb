@@ -11,6 +11,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  phoneNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   password: {
     type: String,
     required: true,
@@ -30,11 +35,6 @@ const userSchema = new mongoose.Schema({
   bio: {
     type: String,
     maxLength: 500,
-  },
-  phoneNumber: {
-    type: String,
-    unique: true,
-    required: true,
   },
   listings: {
     type: [Types.ObjectId],
