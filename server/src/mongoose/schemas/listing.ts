@@ -8,7 +8,7 @@ const listingSchema = new Schema({
   },
   description: {
     type: String,
-    maxLength: 500,
+    maxLength: 1500,
     required: true,
   },
   address: {
@@ -22,7 +22,6 @@ const listingSchema = new Schema({
     },
     state: {
       type: String,
-      required: true,
     },
     country: {
       type: String,
@@ -30,18 +29,15 @@ const listingSchema = new Schema({
     },
     zipCode: {
       type: String,
-      required: true,
     },
   },
-  categories: [
-    {
-      type: Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
-  ],
+  category: {
+    type: Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
   images: [{ type: String, required: true }],
-  ameneties: [{ type: String }],
+  amenities: [{ type: String }],
   pricePerNight: {
     type: Number,
     required: true,
@@ -50,32 +46,32 @@ const listingSchema = new Schema({
     type: Number,
     required: false,
   },
-  bedrooms: {
+  bedroomCount: {
     type: Number,
     required: true,
   },
-  beds: {
+  bedCount: {
     type: Number,
     required: true,
   },
-  bathrooms: {
+  bathroomCount: {
     type: Number,
     required: true,
   },
-  guestRestrictions: {
-    maxAdults: {
+  maxGuestCount: {
+    adults: {
       type: Number,
       required: true,
     },
-    maxChildren: {
+    children: {
       type: Number,
       required: true,
     },
-    maxInfants: {
+    infants: {
       type: Number,
       required: true,
     },
-    maxPets: {
+    pets: {
       type: Number,
       required: true,
     },
@@ -97,49 +93,56 @@ const listingSchema = new Schema({
       },
     },
   ],
-  reservations: [
-    {
-      startDate: {
-        type: Date,
-        required: true,
-      },
-      endDate: {
-        type: Date,
-        required: true,
-      },
-      renter: {
-        type: Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-    },
-  ],
-  ratings: [
-    {
-      user: {
-        type: Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-      rating: {
-        type: Number,
-        required: true,
-      },
-      comment: {
-        type: String,
-        maxLength: 500,
-        required: false,
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
-      updatedAt: {
-        type: Date,
-        default: Date.now,
-      },
-    },
-  ],
+  reservations: {
+    type: Types.ObjectId,
+    ref: "Booking",
+    // {
+    //   startDate: {
+    //     type: Date,
+    //     required: true,
+    //   },
+    //   endDate: {
+    //     type: Date,
+    //     required: true,
+    //   },
+    //   renter: {
+    //     type: Types.ObjectId,
+    //     ref: "User",
+    //     required: true,
+    //   },
+    // },
+  },
+  reviews: {
+    type: [Types.ObjectId],
+    ref: "Review",
+    // required: false,
+  },
+  // ratings: [
+  //   {
+  //     user: {
+  //       type: Types.ObjectId,
+  //       ref: "User",
+  //       required: true,
+  //     },
+  //     rating: {
+  //       type: Number,
+  //       required: true,
+  //     },
+  //     comment: {
+  //       type: String,
+  //       maxLength: 500,
+  //       required: false,
+  //     },
+  //     createdAt: {
+  //       type: Date,
+  //       default: Date.now,
+  //     },
+  //     updatedAt: {
+  //       type: Date,
+  //       default: Date.now,
+  //     },
+  //   },
+  // ],
   averageRating: {
     type: Number,
     default: 0,
@@ -154,6 +157,6 @@ const listingSchema = new Schema({
   },
 });
 
-const Listing = mongoose.model("listing", listingSchema);
+const Listing = mongoose.model("Listing", listingSchema);
 
 export default Listing;

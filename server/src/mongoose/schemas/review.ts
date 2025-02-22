@@ -12,6 +12,6 @@ const reviewSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-const Review = model("review", reviewSchema);
+const Review = model("Review", reviewSchema);
 
 export default Review;

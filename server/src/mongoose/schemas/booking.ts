@@ -6,7 +6,7 @@ const bookingSchema = new Schema({
     ref: "User",
     required: true,
   },
-  renter: {
+  guest: {
     type: Types.ObjectId,
     ref: "User",
     required: true,
@@ -42,10 +42,14 @@ const bookingSchema = new Schema({
     type: Date,
     required: true,
   },
-
   totalPrice: {
     type: Number,
     required: true,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "completed", "cancelled"],
+    default: "pending",
   },
   paymentStatus: {
     type: String,
@@ -58,6 +62,6 @@ const bookingSchema = new Schema({
   },
 });
 
-const Booking = model("booking", bookingSchema);
+const Booking = model("Booking", bookingSchema);
 
 export default Booking;
