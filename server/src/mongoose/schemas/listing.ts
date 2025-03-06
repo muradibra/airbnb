@@ -27,9 +27,9 @@ const listingSchema = new Schema({
       type: String,
       required: true,
     },
-    zipCode: {
-      type: String,
-    },
+    // zipCode: {
+    //   type: String,
+    // },
   },
   category: {
     type: Types.ObjectId,

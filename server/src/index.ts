@@ -12,6 +12,7 @@ import categoryRoutes from "./routes/category";
 import listingRoutes from "./routes/listing";
 import changeRoleRoutes from "./routes/role";
 import reviewRoutes from "./routes/review";
+import wishlistRoutes from "./routes/wishlist";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -46,6 +47,7 @@ app.use("/category", categoryRoutes);
 app.use("/listing", listingRoutes);
 app.use("/change-role", changeRoleRoutes);
 app.use("/review", reviewRoutes);
+app.use("/wishlist", wishlistRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`server is running on port ${process.env.PORT}`);

@@ -18,13 +18,28 @@ export const getListingsSchema: Schema = {
   },
   startDate: {
     in: ["query"],
-    isString: true,
+    isISO8601: {
+      options: { strict: true },
+      errorMessage: "Start date must be a valid ISO date",
+    },
     optional: true,
   },
   endDate: {
     in: ["query"],
-    isString: true,
+    isISO8601: {
+      options: { strict: true },
+      errorMessage: "End date must be a valid ISO date",
+    },
     optional: true,
+    custom: {
+      options: (value, { req }) => {
+        if (!req.query?.startDate) return true;
+        if (new Date(value) <= new Date(req.query.startDate)) {
+          throw new Error("End date must be after start date");
+        }
+        return true;
+      },
+    },
   },
   bedrooms: {
     in: ["query"],
@@ -177,6 +192,40 @@ export const createListingSchema: Schema = {
       errorMessage: "At least 5 images are required",
       options: (_, { req }) => {
         return req.files && req.files.length >= 5;
+      },
+    },
+  },
+  availability: {
+    in: ["body"],
+    optional: true,
+    isArray: {
+      options: { min: 0 },
+    },
+    custom: {
+      options: (value) => {
+        if (!Array.isArray(value)) return true;
+
+        for (const period of value) {
+          if (!period.startDate || !period.endDate) {
+            throw new Error(
+              "Each availability period must have start and end dates"
+            );
+          }
+
+          const startDate = new Date(period.startDate);
+          const endDate = new Date(period.endDate);
+
+          if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            throw new Error("Invalid date format in availability");
+          }
+
+          if (endDate <= startDate) {
+            throw new Error(
+              "End date must be after start date in availability periods"
+            );
+          }
+        }
+        return true;
       },
     },
   },

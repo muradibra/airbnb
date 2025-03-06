@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { RootFilterQuery } from "mongoose";
 import Category from "../mongoose/schemas/category";
 import Listing from "../mongoose/schemas/listing";
+import Calendar from "../mongoose/schemas/calendar";
+import Booking from "../mongoose/schemas/booking";
 
 const getAll = async (req: Request, res: Response) => {
   try {
@@ -35,11 +37,36 @@ const getAll = async (req: Request, res: Response) => {
 
     // Filter by location
     if (typeof location === "string") {
-      filterQuery.$or = [
-        { "address.city": { $regex: new RegExp(location, "i") } },
-        { "address.state": { $regex: new RegExp(location, "i") } },
-        { "address.country": { $regex: new RegExp(location, "i") } },
-      ];
+      filterQuery.$and!.push({
+        $or: [
+          {
+            // No calendar entries exist for these dates
+            _id: {
+              $nin: await Calendar.distinct("listing", {
+                dates: {
+                  $elemMatch: {
+                    date: {
+                      $gte: new Date(startDate),
+                      $lte: new Date(endDate),
+                    },
+                    $or: [{ isBlocked: true }, { isBooked: true }],
+                  },
+                },
+              }),
+            },
+          },
+          {
+            // No bookings exist for these dates
+            _id: {
+              $nin: await Booking.distinct("listing", {
+                status: { $ne: "cancelled" },
+                checkInDate: { $lte: new Date(endDate) },
+                checkOutDate: { $gte: new Date(startDate) },
+              }),
+            },
+          },
+        ],
+      });
     }
 
     // Filter by date availability
