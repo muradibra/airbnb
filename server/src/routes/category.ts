@@ -10,7 +10,7 @@ import validateSchema from "../middlewares/validate";
 
 const router = Router();
 
-router.get("/", categoryController.getAll);
+router.get("/all", categoryController.getAll);
 router.post(
   "/",
   authorize({ isAdmin: true }),
