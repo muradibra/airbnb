@@ -4,7 +4,21 @@ import Category from "../mongoose/schemas/category";
 const getAll = async (req: Request, res: Response) => {
   try {
     const categories = await Category.find();
-    res.status(200).json({ message: "Get all categories", items: categories });
+
+    const transformedCategories = categories.map((category) => ({
+      _id: category._id,
+      name: category.name,
+      description: category.description,
+      icon: `${process.env.BASE_URL}/${category.icon}`,
+      createdAt: category.createdAt,
+      updatedAt: category.updatedAt,
+    }));
+    console.log(transformedCategories);
+
+    res.status(200).json({
+      message: "Get all categories",
+      items: transformedCategories,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
