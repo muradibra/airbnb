@@ -14,6 +14,7 @@ import changeRoleRoutes from "./routes/role";
 import reviewRoutes from "./routes/review";
 import wishlistRoutes from "./routes/wishlist";
 import userRoutes from "./routes/user";
+import calendarRoutes from "./routes/calendar";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -50,6 +51,7 @@ app.use("/change-role", changeRoleRoutes);
 app.use("/review", reviewRoutes);
 app.use("/wishlist", wishlistRoutes);
 app.use("/user", userRoutes);
+app.use("/calendar", calendarRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`server is running on port ${process.env.PORT}`);

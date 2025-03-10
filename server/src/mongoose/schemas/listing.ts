@@ -1,4 +1,42 @@
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema, Types, Document } from "mongoose";
+
+interface IListing extends Document {
+  title: string;
+  description: string;
+  address: {
+    street: string;
+    city: string;
+    state?: string;
+    country: string;
+    zipCode?: string;
+  };
+  category: Types.ObjectId;
+  images: string[];
+  amenities: string[];
+  pricePerNight: number;
+  discountedPricePerNight?: number;
+  bedroomCount: number;
+  bedCount: number;
+  bathroomCount: number;
+  maxGuestCount: {
+    adults: number;
+    children: number;
+    infants: number;
+    pets: number;
+  };
+  host: Types.ObjectId;
+  availability: [
+    {
+      startDate: Date;
+      endDate: Date;
+    }
+  ];
+  reservations: Types.ObjectId;
+  reviews: Types.ObjectId[];
+  averageRating: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const listingSchema = new Schema({
   title: {
@@ -12,25 +50,30 @@ const listingSchema = new Schema({
     required: true,
   },
   address: {
-    street: {
-      type: String,
-      required: true,
-    },
-    city: {
-      type: String,
-      required: true,
-    },
-    state: {
-      type: String,
-    },
-    country: {
-      type: String,
-      required: true,
-    },
-    // zipCode: {
-    //   type: String,
-    // },
+    type: Types.ObjectId,
+    ref: "Location",
+    required: true,
   },
+  // address: {
+  //   street: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   city: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   state: {
+  //     type: String,
+  //   },
+  //   country: {
+  //     type: String,
+  //     required: true,
+  //   },
+  //   // zipCode: {
+  //   //   type: String,
+  //   // },
+  // },
   category: {
     type: Types.ObjectId,
     ref: "Category",
@@ -157,6 +200,6 @@ const listingSchema = new Schema({
   },
 });
 
-const Listing = mongoose.model("Listing", listingSchema);
+const Listing = mongoose.model<IListing>("Listing", listingSchema);
 
 export default Listing;

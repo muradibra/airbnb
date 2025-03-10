@@ -1,5 +1,23 @@
 import { model, Schema, Types } from "mongoose";
 
+interface IBooking extends Document {
+  host: Types.ObjectId;
+  guest: Types.ObjectId;
+  guestsCount: {
+    adults: number;
+    children: number;
+    infants: number;
+    pets: number;
+  };
+  listing: Types.ObjectId;
+  checkInDate: Date;
+  checkOutDate: Date;
+  totalPrice: number;
+  status: string;
+  paymentStatus: string;
+  createdAt: Date;
+}
+
 const bookingSchema = new Schema({
   host: {
     type: Types.ObjectId,
@@ -62,6 +80,6 @@ const bookingSchema = new Schema({
   },
 });
 
-const Booking = model("Booking", bookingSchema);
+const Booking = model<IBooking>("Booking", bookingSchema);
 
 export default Booking;

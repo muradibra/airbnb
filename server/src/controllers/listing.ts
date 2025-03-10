@@ -4,6 +4,7 @@ import Category from "../mongoose/schemas/category";
 import Listing from "../mongoose/schemas/listing";
 import Calendar from "../mongoose/schemas/calendar";
 import Booking from "../mongoose/schemas/booking";
+import Location from "../mongoose/schemas/location";
 
 const getAll = async (req: Request, res: Response) => {
   try {
@@ -190,10 +191,24 @@ const create = async (req: Request, res: Response) => {
       file.path.replace(/\\/g, "/")
     );
 
+    let location = await Location.findOne({
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      country: address.country,
+      zipCode: address.zipCode,
+    });
+
+    // If the location doesn't exist, create a new one
+    if (!location) {
+      location = new Location(address);
+      await location.save();
+    }
+
     const listing = await Listing.create({
       title,
       description,
-      address,
+      address: location._id,
       category,
       images,
       amenities,
