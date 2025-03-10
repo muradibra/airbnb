@@ -1,7 +1,36 @@
 import { Request, Response } from "express";
 import Calendar from "../mongoose/schemas/calendar";
 import Listing from "../mongoose/schemas/listing";
-import { startOfDay, endOfDay, eachDayOfInterval } from "date-fns";
+import { isBefore, addDays } from "date-fns";
+// import fs from "fs";
+
+// const LOG_FILE = "availability_logs.txt";
+
+// const logToFile = (message: string) => {
+//   fs.appendFileSync(LOG_FILE, message + "\n", { encoding: "utf8" });
+// };
+
+const setMidnightUTC = (date: Date) => {
+  if (!(date instanceof Date)) {
+    date = new Date(date);
+  }
+
+  const fixedDate = new Date(
+    Date.UTC(
+      date.getFullYear(), // Get the full year in local time
+      date.getMonth(), // Get the month in local time
+      date.getDate(), // Get the day in local time
+      0,
+      0,
+      0,
+      0 // Set the time to 00:00:00 UTC
+    )
+  );
+
+  console.log("⏳ Fixed Date:", fixedDate.toISOString());
+
+  return fixedDate;
+};
 
 const getAvailability = async (req: Request, res: Response) => {
   try {
@@ -39,42 +68,52 @@ const updateAvailability = async (req: Request, res: Response) => {
     const { startDate, endDate, isBlocked, customPrice, minimumStay, note } =
       req.body;
 
-    // Verify listing ownership
-    const listing = await Listing.findOne({ _id: listingId, host: userId });
-    if (!listing) {
-      res.status(403).json({ message: "Unauthorized or listing not found" });
+    let receivedStartDate = new Date(startDate);
+    let receivedEndDate = new Date(endDate);
+
+    const sanitizedStartDate = setMidnightUTC(receivedStartDate);
+    const sanitizedEndDate = setMidnightUTC(receivedEndDate);
+
+    if (isBefore(sanitizedEndDate, sanitizedStartDate)) {
+      res.status(400).json({ message: "End date cannot be before start date" });
       return;
     }
 
-    // Get all dates in range
-    const datesInRange = eachDayOfInterval({
-      start: new Date(startDate),
-      end: new Date(endDate),
-    });
+    let datesInRange: Date[] = [];
+    let currentDate = new Date(sanitizedStartDate);
 
-    // Find or create calendar
-    let calendar = await Calendar.findOne({ listing: listingId });
+    while (currentDate <= sanitizedEndDate) {
+      datesInRange.push(new Date(currentDate));
+      currentDate = addDays(currentDate, 1);
+    }
+
+    let calendar = await Calendar.findOne({ listing: listingId, host: userId });
     if (!calendar) {
       calendar = new Calendar({ listing: listingId, dates: [] });
     }
 
-    // Update each date in range
     for (const date of datesInRange) {
+      const fixedDate = setMidnightUTC(date);
+
       const existingDateIndex = calendar.dates.findIndex(
-        (d) => d.date.getTime() === startOfDay(date).getTime()
+        (d) => d.date.getTime() === fixedDate.getTime()
       );
 
       const dateData = {
-        date: startOfDay(date),
+        date: fixedDate,
         isBlocked: isBlocked ?? false,
         customPrice: customPrice || null,
         minimumStay: minimumStay || calendar.defaultMinimumStay,
         note: note || "",
       };
+
       if (existingDateIndex >= 0) {
-        Object.assign(calendar.dates[existingDateIndex], dateData);
+        Object.assign(calendar.dates[existingDateIndex], {
+          ...dateData,
+          isBooked: false,
+        });
       } else {
-        calendar.dates.push(dateData);
+        calendar.dates.push({ ...dateData, isBooked: false });
       }
     }
 
@@ -86,7 +125,7 @@ const updateAvailability = async (req: Request, res: Response) => {
       calendar,
     });
   } catch (err) {
-    console.error(err);
+    console.log(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };

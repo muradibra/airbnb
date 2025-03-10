@@ -1,5 +1,14 @@
 import mongoose, { Schema, Types } from "mongoose";
 
+interface IWishlist extends Document {
+  user: Types.ObjectId;
+  name: string;
+  listings: Types.ObjectId[];
+  privacy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const wishlistSchema = new Schema({
   user: {
     type: Types.ObjectId,
@@ -32,6 +41,6 @@ const wishlistSchema = new Schema({
   },
 });
 
-const Wishlist = mongoose.model("Wishlist", wishlistSchema);
+const Wishlist = mongoose.model<IWishlist>("Wishlist", wishlistSchema);
 
 export default Wishlist;

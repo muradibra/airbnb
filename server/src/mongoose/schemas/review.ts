@@ -1,5 +1,13 @@
 import { model, Schema, Types } from "mongoose";
 
+interface IReview extends Document {
+  listing: Types.ObjectId;
+  user: Types.ObjectId;
+  rating: number;
+  comment: string;
+  createdAt: Date;
+}
+
 const reviewSchema = new Schema({
   listing: {
     type: Types.ObjectId,
@@ -12,6 +20,6 @@ const reviewSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-const Review = model("Review", reviewSchema);
+const Review = model<IReview>("Review", reviewSchema);
 
 export default Review;

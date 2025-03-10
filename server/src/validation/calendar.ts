@@ -55,6 +55,45 @@ export const updateAvailabilitySchema: Schema = {
   },
 };
 
+export const createAvailabilitySchema: Schema = {
+  startDate: {
+    in: ["body"],
+    isISO8601: true,
+    toDate: true,
+    errorMessage: "Invalid start date",
+  },
+  endDate: {
+    in: ["body"],
+    isISO8601: true,
+    toDate: true,
+    errorMessage: "Invalid end date",
+  },
+  isBlocked: {
+    in: ["body"],
+    isBoolean: true,
+    optional: true,
+    errorMessage: "Invalid value for isBlocked",
+  },
+  customPrice: {
+    in: ["body"],
+    isFloat: { options: { min: 0 } },
+    optional: true,
+    errorMessage: "Invalid value for customPrice",
+  },
+  minimumStay: {
+    in: ["body"],
+    isInt: { options: { min: 1 } },
+    optional: true,
+    errorMessage: "Invalid value for minimumStay",
+  },
+  note: {
+    in: ["body"],
+    isString: true,
+    optional: true,
+    errorMessage: "Invalid value for note",
+  },
+};
+
 export const blockDatesSchema: Schema = {
   startDate: {
     in: ["body"],

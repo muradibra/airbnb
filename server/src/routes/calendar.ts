@@ -7,12 +7,20 @@ import {
   blockDatesSchema,
   customPricingSchema,
   minimumStaySchema,
+  createAvailabilitySchema,
 } from "../validation/calendar";
 
 const router = Router();
 
 // Get availability for a listing
 router.get("/:listingId", calendarController.getAvailability);
+
+// router.post(
+//   "/:listingId/availability",
+//   authorize({ isHost: true }),
+//   validateSchema(createAvailabilitySchema),
+//   calendarController.createAvailability
+// );
 
 // Update availability
 router.put(
