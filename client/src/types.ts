@@ -134,3 +134,14 @@ export enum ReviewStatus {
 export type AxiosResponseError = AxiosError<{
   message: string;
 }>;
+
+export interface ImageFile {
+  id: string;
+  file: File | string;
+  preview: string;
+}
+
+export interface SortableImageProps {
+  image: ImageFile;
+  removeImage: (id: string) => void;
+}

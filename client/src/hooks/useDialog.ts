@@ -3,8 +3,10 @@ import { create } from "zustand";
 export enum DialogTypeEnum {
   LOGIN = "LOGIN",
   REGISTER = "REGISTER",
-  FORGOT_PASSWORD = "FORGOT_PASSWORD",
-  RESET_PASSWORD = "RESET_PASSWORD",
+  CREATE_LISTING = "CREATE_LISTING",
+  EDIT_LISTING = "EDIT_LISTING",
+  // FORGOT_PASSWORD = "FORGOT_PASSWORD",
+  // RESET_PASSWORD = "RESET_PASSWORD",
 }
 
 interface DialogState {

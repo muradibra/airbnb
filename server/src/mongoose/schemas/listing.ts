@@ -18,12 +18,7 @@ interface IListing extends Document {
   bedroomCount: number;
   bedCount: number;
   bathroomCount: number;
-  maxGuestCount: {
-    adults: number;
-    children: number;
-    infants: number;
-    pets: number;
-  };
+  maxGuestCount: number;
   host: Types.ObjectId;
   availability: [
     {
@@ -54,26 +49,6 @@ const listingSchema = new Schema({
     ref: "Location",
     required: true,
   },
-  // address: {
-  //   street: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   city: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   state: {
-  //     type: String,
-  //   },
-  //   country: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   // zipCode: {
-  //   //   type: String,
-  //   // },
-  // },
   category: {
     type: Types.ObjectId,
     ref: "Category",
@@ -89,6 +64,10 @@ const listingSchema = new Schema({
     type: Number,
     required: false,
   },
+  maxGuestCount: {
+    type: Number,
+    required: true,
+  },
   bedroomCount: {
     type: Number,
     required: true,
@@ -100,24 +79,6 @@ const listingSchema = new Schema({
   bathroomCount: {
     type: Number,
     required: true,
-  },
-  maxGuestCount: {
-    adults: {
-      type: Number,
-      required: true,
-    },
-    children: {
-      type: Number,
-      required: true,
-    },
-    infants: {
-      type: Number,
-      required: true,
-    },
-    pets: {
-      type: Number,
-      required: true,
-    },
   },
   host: {
     type: Types.ObjectId,
@@ -136,25 +97,27 @@ const listingSchema = new Schema({
       },
     },
   ],
-  reservations: {
-    type: Types.ObjectId,
-    ref: "Booking",
-    // {
-    //   startDate: {
-    //     type: Date,
-    //     required: true,
-    //   },
-    //   endDate: {
-    //     type: Date,
-    //     required: true,
-    //   },
-    //   renter: {
-    //     type: Types.ObjectId,
-    //     ref: "User",
-    //     required: true,
-    //   },
-    // },
-  },
+  reservations: [
+    {
+      type: Types.ObjectId,
+      ref: "Booking",
+      // {
+      //   startDate: {
+      //     type: Date,
+      //     required: true,
+      //   },
+      //   endDate: {
+      //     type: Date,
+      //     required: true,
+      //   },
+      //   renter: {
+      //     type: Types.ObjectId,
+      //     ref: "User",
+      //     required: true,
+      //   },
+      // },
+    },
+  ],
   reviews: {
     type: [Types.ObjectId],
     ref: "Review",

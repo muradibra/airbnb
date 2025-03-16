@@ -38,17 +38,18 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     "local",
     function (err: Error, user: IUser, info: { message?: string }) {
       if (err) {
-        return res.status(500).json({ message: "Internal server error!" });
+        res.status(500).json({ message: "Internal server error!" });
+        return;
       }
       if (info?.message || !user) {
-        return res
-          .status(401)
-          .json({ message: info?.message || "Unauthorized!" });
+        res.status(401).json({ message: info?.message || "Unauthorized!" });
+        return;
       }
 
       req.login(user, function (err) {
         if (err) {
-          return res.status(500).json({ message: "Internal server error!" });
+          res.status(500).json({ message: "Internal server error!" });
+          return;
         }
         next();
       });
