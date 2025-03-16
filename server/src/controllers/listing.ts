@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
-import { RootFilterQuery } from "mongoose";
+import { RootFilterQuery, Types } from "mongoose";
 import Category from "../mongoose/schemas/category";
 import Listing from "../mongoose/schemas/listing";
 import Calendar from "../mongoose/schemas/calendar";
 import Booking from "../mongoose/schemas/booking";
 import Location from "../mongoose/schemas/location";
+import User from "../mongoose/schemas/user";
+import Review from "../mongoose/schemas/review";
+import Wishlist from "../mongoose/schemas/wishlist";
 
 const getAll = async (req: Request, res: Response) => {
   try {
@@ -135,13 +138,17 @@ const getAll = async (req: Request, res: Response) => {
     const listings = await Listing.find(filterQuery)
       .populate("category", "name description icon")
       .populate("host", "name email")
+      .populate("address")
+      .populate("reviews")
       .sort(sortQuery)
       .skip(Number(skip))
       .limit(Number(take));
 
+    const listingsCount = await Listing.countDocuments(filterQuery);
+
     res
       .status(200)
-      .json({ success: true, count: listings.length, hasMore, listings });
+      .json({ success: true, count: listingsCount, hasMore, listings });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -155,8 +162,12 @@ const getById = async (req: Request, res: Response) => {
     const listing = await Listing.findById(id)
       .populate("category", "name description icon")
       .populate("host", "name email")
-      .populate("reviews", "rating comment user")
-      .populate("reviews.user", "name email");
+      .populate("address")
+      .populate("amenities")
+      .populate("calendar")
+      .populate("bookings")
+      .populate("reviews")
+      .populate("reviews.user");
 
     if (!listing) {
       res.status(404).json({ message: "Listing not found" });
@@ -170,26 +181,100 @@ const getById = async (req: Request, res: Response) => {
   }
 };
 
+const getHostListings = async (req: Request, res: Response) => {
+  try {
+    const user = req.user?._id;
+
+    const host = await User.findById(new Types.ObjectId(user));
+
+    if (!host || host.role !== "host") {
+      res.status(403).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const listings = await Listing.find({ host: user })
+      // .populate("category", "name description icon")
+      // .populate("host", "name email")
+      .populate("address");
+    // .populate("amenities")
+    // .populate("calendar")
+    // .populate("bookings")
+    // .populate("reviews")
+
+    const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+
+    listings.forEach((listing) => {
+      listing.images = listing.images.map((image) => `${BASE_URL}/${image}`);
+    });
+
+    res.status(200).json({ message: "Host listings fetched", listings });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const getHostListingById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?._id;
+
+    const host = await User.findById(new Types.ObjectId(userId));
+
+    if (!host || host.role !== "host") {
+      res.status(403).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const listing = await Listing.findById({ _id: id, host: userId }).populate(
+      "address"
+    );
+
+    if (!listing) {
+      res.status(404).json({ message: "Listing not found" });
+      return;
+    }
+
+    listing.images = listing.images.map((l) => {
+      return `${process.env.BASE_URL}/${l}`;
+    });
+
+    res.status(200).json({ message: "Listing fetched", listing });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const create = async (req: Request, res: Response) => {
   try {
     const user = req.user?._id;
+
+    const host = await User.findById(user);
+
+    if (!host || host.role !== "host") {
+      res.status(403).json({ message: "Unauthorized" });
+      return;
+    }
+
     const {
       title,
       description,
-      address,
       category,
+      address,
       amenities,
-      pricePerNight,
-      discountedPricePerNight,
       bedroomCount,
       bedCount,
       bathroomCount,
       maxGuestCount,
+      pricePerNight,
     } = req.matchedData;
 
     const images = (req.files as Express.Multer.File[]).map((file) =>
       file.path.replace(/\\/g, "/")
     );
+
+    console.log(images);
 
     let location = await Location.findOne({
       street: address.street,
@@ -199,31 +284,35 @@ const create = async (req: Request, res: Response) => {
       zipCode: address.zipCode,
     });
 
-    // If the location doesn't exist, create a new one
-    if (!location) {
-      location = new Location(address);
-      await location.save();
-    }
+    if (!location) location = await Location.create(address);
 
     const listing = await Listing.create({
       title,
       description,
-      address: location._id,
       category,
-      images,
+      address: location._id,
       amenities,
+      discountedPricePerNight: Number(pricePerNight),
+      bedroomCount: Number(bedroomCount),
+      bedCount: Number(bedCount),
+      bathroomCount: Number(bathroomCount),
+      maxGuestCount: Number(maxGuestCount),
       pricePerNight,
-      discountedPricePerNight,
-      bedroomCount,
-      bedCount,
-      bathroomCount,
-      maxGuestCount,
+      images,
       host: user,
     });
 
+    await Calendar.create({
+      listing: listing._id,
+      dates: [],
+    });
+
+    host.listings.push(listing._id as Types.ObjectId);
+    await host.save();
+
     res.status(200).json({
       message: "Listing created",
-      item: listing,
+      // item: listing,
     });
   } catch (error) {
     console.log(error);
@@ -248,13 +337,16 @@ const update = async (req: Request, res: Response) => {
       bedCount,
       bathroomCount,
       maxGuestCount,
+      images,
     } = req.matchedData;
 
-    const images = (req.files as Express.Multer.File[]).map((file) =>
+    const uploadedImages = (req.files as Express.Multer.File[]).map((file) =>
       file.path.replace(/\\/g, "/")
     );
 
-    const listing = await Listing.findOne({ _id: id, host: user });
+    const listing = await Listing.findOne({ _id: id, host: user }).populate(
+      "address"
+    );
 
     if (listing?.host.toString() !== user?.toString()) {
       res.status(403).json({ message: "Unauthorized" });
@@ -266,12 +358,49 @@ const update = async (req: Request, res: Response) => {
       return;
     }
 
-    await listing.updateOne({
+    let updatedImages: string[] = [];
+    let uploadIndex = 0;
+
+    for (const img of images) {
+      if (img.type === "old") {
+        // Keep existing image URL in its new position
+        img.value = img.value.split(`${process.env.BASE_URL}/`).pop();
+        updatedImages.push(img.value);
+      } else if (img.type === "new") {
+        // Replace placeholder with the next uploaded image
+        if (uploadIndex < uploadedImages.length) {
+          updatedImages.push(uploadedImages[uploadIndex]);
+          uploadIndex++;
+        } else {
+          console.warn("⚠ Missing uploaded image for:", img);
+        }
+      }
+    }
+
+    console.log("✅ Final Ordered Images:", updatedImages);
+
+    const location = await Location.findOne({
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      country: address.country,
+      zipCode: address.zipCode,
+    });
+
+    let newLocation;
+    if (!location) {
+      newLocation = await Location.create(address);
+      // listing.address = newLocation._id;
+    }
+
+    // if(address.street !== listing.address.street || address.city !== listing.address.city || address.state !== listing.address.state || address.country !== listing.address.country || address.zipCode !== listing.address.zipCode) {
+
+    const updatedListing = await listing.updateOne({
       title,
       description,
-      address,
+      address: newLocation?._id,
       category,
-      images,
+      images: updatedImages,
       amenities,
       pricePerNight,
       discountedPricePerNight,
@@ -281,12 +410,13 @@ const update = async (req: Request, res: Response) => {
       maxGuestCount,
     });
 
-    res.status(200).json({ message: "Listing updated" });
+    res.status(200).json({ message: "Listing updated", updatedListing });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const remove = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
@@ -304,6 +434,20 @@ const remove = async (req: Request, res: Response) => {
       return;
     }
 
+    await Calendar.findOneAndDelete({ listing: id });
+    await Booking.deleteMany({ listing: id });
+    await Location.deleteOne({ _id: listing.address });
+    await Review.deleteMany({ listing: id });
+    // await Wishlist.deleteMany({ listing: id });
+
+    const host = await User.findById(user);
+    if (host) {
+      host.listings = host.listings.filter(
+        (listingId) => listingId.toString() !== id
+      );
+      await host.save();
+    }
+
     res.status(200).json({ message: "Listing deleted" });
   } catch (err) {
     console.log(err);
@@ -314,6 +458,8 @@ const remove = async (req: Request, res: Response) => {
 const listingController = {
   getAll,
   getById,
+  getHostListings,
+  getHostListingById,
   create,
   update,
   remove,

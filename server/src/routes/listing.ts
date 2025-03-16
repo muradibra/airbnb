@@ -8,6 +8,16 @@ import { uploadBnb } from "../middlewares/uploadBnb";
 const router = Router();
 
 router.get("/", validateSchema(getListingsSchema), listingController.getAll);
+router.get(
+  "/host",
+  authorize({ isHost: true }),
+  listingController.getHostListings
+);
+router.get(
+  "/host/listing/:id",
+  authorize({ isHost: true }),
+  listingController.getHostListingById
+);
 router.get("/:id", listingController.getById);
 router.post(
   "/create",
@@ -17,9 +27,9 @@ router.post(
   listingController.create
 );
 router.put(
-  "update/:id",
+  "/update/:id",
   authorize({ isHost: true }),
-  uploadBnb.array("images", 100),
+  uploadBnb.any(),
   validateSchema(createListingSchema),
   listingController.update
 );

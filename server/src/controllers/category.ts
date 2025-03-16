@@ -13,7 +13,7 @@ const getAll = async (req: Request, res: Response) => {
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
     }));
-    console.log(transformedCategories);
+    // console.log(transformedCategories);
 
     res.status(200).json({
       message: "Get all categories",

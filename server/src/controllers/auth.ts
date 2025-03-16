@@ -48,7 +48,7 @@ const login = async (req: Request, res: Response) => {
 
 const currentUser = async (req: Request, res: Response) => {
   const user = req.user;
-  if (user?.avatar) user.avatar = `${process.env.BASE_URL}${user.avatar}`;
+  if (user?.avatar) user.avatar = `${process.env.BASE_URL}/${user.avatar}`;
 
   res.json({ user });
 };

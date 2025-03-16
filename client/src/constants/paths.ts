@@ -70,11 +70,12 @@ export const paths = {
     MAIN: "/host",
     LISTINGS: {
       MAIN: "/host/listings",
-      CREATE: "/host/listings/create",
-      EDIT: "/host/listings/:id/edit",
+      // CREATE: "/host/listings/create",
+      // EDIT: "/host/listings/:id/edit",
     },
     BOOKINGS: {
       MAIN: "/host/bookings",
     },
+    CALENDAR: "/host/calendar",
   },
 };

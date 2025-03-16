@@ -10,6 +10,10 @@ import DashboardUsersPage from "@/pages/(dashboard)/users";
 import DashboardCategories from "@/pages/(dashboard)/category";
 import CategoryCreatePage from "@/pages/(dashboard)/category/create";
 import CategoryUpdatePage from "@/pages/(dashboard)/category/edit";
+import HostLayout from "@/components/shared/layouts/HostLayout";
+import HostMainPage from "@/pages/(business)/host-main";
+import HostListingsPage from "@/pages/(business)/host-listings";
+import HostCalendarPage from "@/pages/(business)/host-calendar";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +60,24 @@ export const router = createBrowserRouter([
             element: <CategoryUpdatePage />,
           },
         ],
+      },
+    ],
+  },
+  {
+    path: "",
+    element: <HostLayout />,
+    children: [
+      {
+        path: paths.HOST.MAIN,
+        element: <HostMainPage />,
+      },
+      {
+        path: paths.HOST.LISTINGS.MAIN,
+        element: <HostListingsPage />,
+      },
+      {
+        path: paths.HOST.CALENDAR,
+        element: <HostCalendarPage />,
       },
     ],
   },

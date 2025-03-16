@@ -117,20 +117,47 @@ export const createListingSchema: Schema = {
     in: ["body"],
     isString: true,
   },
+  "address.country": {
+    in: ["body"],
+    isString: true,
+  },
+  "address.city": {
+    in: ["body"],
+    isString: true,
+  },
+  "address.street": {
+    in: ["body"],
+    isString: true,
+  },
+  "address.state": {
+    in: ["body"],
+    isString: true,
+    optional: true,
+  },
+  "address.zip": {
+    in: ["body"],
+    isString: true,
+    optional: true,
+  },
+  maxGuestCount: {
+    in: ["body"],
+    isInt: { errorMessage: "maxGuestCount must be an integer" },
+    toInt: true,
+  },
   bedroomCount: {
     in: ["body"],
-    isInt: true,
+    isInt: { errorMessage: "bedroomCount must be an integer" },
+    toInt: true,
   },
   bedCount: {
     in: ["body"],
-    isInt: true,
-    isLength: {
-      options: { min: 1 },
-    },
+    isInt: { errorMessage: "bedCount must be an integer" },
+    toInt: true,
   },
   bathroomCount: {
     in: ["body"],
-    isInt: true,
+    isInt: { errorMessage: "bathroomCount must be an integer" },
+    toInt: true,
   },
   amenities: {
     in: ["body"],
@@ -138,95 +165,59 @@ export const createListingSchema: Schema = {
   },
   pricePerNight: {
     in: ["body"],
-    isInt: true,
-  },
-  discountedPricePerNight: {
-    in: ["body"],
-    isInt: true,
-    optional: true,
-  },
-  maxGuestCount: {
-    in: ["body"],
-    isInt: true,
-  },
-  address: {
-    in: ["body"],
-    customSanitizer: {
-      options: (value) => {
-        // Ensure location is parsed correctly
-        if (typeof value === "string") {
-          try {
-            return JSON.parse(value);
-          } catch (e) {
-            throw new Error("Location must be a valid JSON object");
-          }
-        }
-        return value;
-      },
-    },
-    custom: {
-      options: (value) => {
-        if (typeof value !== "object" || value === null) {
-          throw new Error("Location must be an object");
-        }
-
-        const requiredFields = ["country", "city", "street"];
-        for (const field of requiredFields) {
-          if (
-            !value[field] ||
-            typeof value[field] !== "string" ||
-            value[field].trim().length < 2
-          ) {
-            throw new Error(
-              `${field} is required and must be at least 2 characters long`
-            );
-          }
-        }
-
-        return true;
-      },
-    },
+    isInt: { errorMessage: "pricePerNight must be an integer" },
+    toInt: true,
   },
   images: {
     custom: {
       errorMessage: "At least 5 images are required",
       options: (_, { req }) => {
-        return req.files && req.files.length >= 5;
-      },
-    },
-  },
-  availability: {
-    in: ["body"],
-    optional: true,
-    isArray: {
-      options: { min: 0 },
-    },
-    custom: {
-      options: (value) => {
-        if (!Array.isArray(value)) return true;
+        const newImages = req.files || [];
+        const existingImages = req.body.images || [];
 
-        for (const period of value) {
-          if (!period.startDate || !period.endDate) {
-            throw new Error(
-              "Each availability period must have start and end dates"
-            );
-          }
+        // console.log("newImages:", newImages);
+        // console.log("existingImages:", existingImages);
 
-          const startDate = new Date(period.startDate);
-          const endDate = new Date(period.endDate);
-
-          if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-            throw new Error("Invalid date format in availability");
-          }
-
-          if (endDate <= startDate) {
-            throw new Error(
-              "End date must be after start date in availability periods"
-            );
-          }
+        // Ensure we have at least 5 images total
+        if (newImages.length + existingImages.length < 5) {
+          throw new Error("At least 5 images are required");
         }
         return true;
       },
     },
   },
+  // availability: {
+  //   in: ["body"],
+  //   optional: true,
+  //   isArray: {
+  //     options: { min: 0 },
+  //   },
+  //   custom: {
+  //     options: (value) => {
+  //       if (!Array.isArray(value)) return true;
+
+  //       for (const period of value) {
+  //         if (!period.startDate || !period.endDate) {
+  //           throw new Error(
+  //             "Each availability period must have start and end dates"
+  //           );
+  //         }
+
+  //         const startDate = new Date(period.startDate);
+  //         const endDate = new Date(period.endDate);
+
+  //         if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+  //           throw new Error("Invalid date format in availability");
+  //         }
+
+  //         if (endDate <= startDate) {
+  //           throw new Error(
+  //             "End date must be after start date in availability periods"
+  //           );
+  //         }
+  //       }
+  //       return true;
+  //     },
+  //   },
+  // },
 };
