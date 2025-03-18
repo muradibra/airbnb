@@ -19,6 +19,9 @@ const HomePage = () => {
       {user?.role === UserRole.Admin && (
         <Link to={paths.DASHBOARD.CATEGORIES.LIST}>Go to Dashboard</Link>
       )}
+      {user?.role === UserRole.Host && (
+        <Link to={paths.HOST.CALENDAR}>Go to Host Calendar</Link>
+      )}
     </div>
   );
 };

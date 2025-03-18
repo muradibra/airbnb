@@ -49,6 +49,11 @@ const calendarSchema = new Schema({
         type: Boolean,
         default: false,
       },
+      customer: {
+        type: Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
       customPrice: {
         type: Number,
         default: null,

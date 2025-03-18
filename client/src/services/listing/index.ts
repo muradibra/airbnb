@@ -85,11 +85,16 @@ const editListing = async ({
   return axiosInstance.put(`/listing/update/${id}`, formData);
 };
 
+export const removeListing = async (id: string) => {
+  return axiosInstance.delete(`/listing/delete/${id}`);
+};
+
 const listingService = {
   getHostListings,
   getHostListingById,
   createListing,
   editListing,
+  removeListing,
 };
 
 export default listingService;

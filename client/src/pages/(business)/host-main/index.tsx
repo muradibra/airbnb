@@ -1,31 +1,8 @@
 // import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 import { MultiStepForm } from "@/components/shared/MultiStepForm";
-import { useAppSelector } from "@/hooks/redux";
-import { selectAuth } from "@/store/auth";
-import { DialogTypeEnum, useDialog } from "@/hooks/useDialog";
+import { DialogTypeEnum } from "@/hooks/useDialog";
 
 const HostMainPage = () => {
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  const { openDialog } = useDialog();
-  const { user } = useAppSelector(selectAuth);
-  const searchParams = new URLSearchParams(window.location.search);
-  const createListing = searchParams.get("createListing");
-
-  useEffect(() => {
-    if (createListing) {
-      // setIsModalOpen(true);
-      openDialog(DialogTypeEnum.CREATE_LISTING);
-    }
-  }, [createListing]);
-
-  useEffect(() => {
-    if (user?.listings.length === 0) {
-      // setIsModalOpen(true);
-      openDialog(DialogTypeEnum.CREATE_LISTING);
-    }
-  }, [user]);
-
   return (
     <div className="px-4 py-3">
       <div className="flex justify-between items-center mb-6">

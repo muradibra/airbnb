@@ -302,10 +302,38 @@ const create = async (req: Request, res: Response) => {
       host: user,
     });
 
+    // Create dates for the next 365 days
+    const dates = Array.from({ length: 365 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      return date;
+    });
+
     await Calendar.create({
       listing: listing._id,
       dates: [],
     });
+
+    await Calendar.updateOne(
+      {
+        listing: listing._id,
+      },
+      {
+        $push: {
+          dates: {
+            $each: dates.map((date) => ({
+              date,
+              isBlocked: false,
+              isBooked: false,
+              customer: null,
+              customPrice: null,
+              minimumStay: 1,
+              note: "",
+            })),
+          },
+        },
+      }
+    );
 
     host.listings.push(listing._id as Types.ObjectId);
     await host.save();
@@ -377,7 +405,7 @@ const update = async (req: Request, res: Response) => {
       }
     }
 
-    console.log("✅ Final Ordered Images:", updatedImages);
+    // console.log("✅ Final Ordered Images:", updatedImages);
 
     const location = await Location.findOne({
       street: address.street,
@@ -388,12 +416,7 @@ const update = async (req: Request, res: Response) => {
     });
 
     let newLocation;
-    if (!location) {
-      newLocation = await Location.create(address);
-      // listing.address = newLocation._id;
-    }
-
-    // if(address.street !== listing.address.street || address.city !== listing.address.city || address.state !== listing.address.state || address.country !== listing.address.country || address.zipCode !== listing.address.zipCode) {
+    if (!location) newLocation = await Location.create(address);
 
     const updatedListing = await listing.updateOne({
       title,

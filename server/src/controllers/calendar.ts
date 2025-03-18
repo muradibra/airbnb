@@ -44,12 +44,17 @@ const getAvailability = async (req: Request, res: Response) => {
       return;
     }
 
+    console.log("📅 Calendar:", calendar);
+
     // Filter dates within the requested range
-    const availabilityInRange = calendar.dates.filter(
-      (date) =>
-        date.date >= new Date(startDate as string) &&
-        date.date <= new Date(endDate as string)
-    );
+    const availabilityInRange =
+      startDate || endDate
+        ? calendar.dates.filter(
+            (date) =>
+              date.date >= new Date(startDate as string) &&
+              date.date <= new Date(endDate as string)
+          )
+        : calendar.dates;
 
     res.status(200).json({
       message: "Availability fetched successfully",
@@ -65,16 +70,23 @@ const updateAvailability = async (req: Request, res: Response) => {
   try {
     const userId = req.user?._id;
     const { listingId } = req.params;
-    const { startDate, endDate, isBlocked, customPrice, minimumStay, note } =
+    let { startDate, endDate, isBlocked, customPrice, minimumStay, note } =
       req.body;
 
-    let receivedStartDate = new Date(startDate);
-    let receivedEndDate = new Date(endDate);
+    const sanitizedStartDate = setMidnightUTC(new Date(startDate));
+    let sanitizedEndDate = endDate ? setMidnightUTC(new Date(endDate)) : null;
+    let isBlockingSingleDay = false;
 
-    const sanitizedStartDate = setMidnightUTC(receivedStartDate);
-    const sanitizedEndDate = setMidnightUTC(receivedEndDate);
+    // If no endDate is provided, treat it as a single-day selection and set endDate as startDate
+    if (!sanitizedEndDate) {
+      sanitizedEndDate = sanitizedStartDate;
+      isBlockingSingleDay = true;
+    }
 
-    if (isBefore(sanitizedEndDate, sanitizedStartDate)) {
+    if (
+      isBefore(sanitizedEndDate, sanitizedStartDate) &&
+      !isBlockingSingleDay
+    ) {
       res.status(400).json({ message: "End date cannot be before start date" });
       return;
     }
@@ -87,7 +99,7 @@ const updateAvailability = async (req: Request, res: Response) => {
       currentDate = addDays(currentDate, 1);
     }
 
-    let calendar = await Calendar.findOne({ listing: listingId, host: userId });
+    let calendar = await Calendar.findOne({ listing: listingId });
     if (!calendar) {
       calendar = new Calendar({ listing: listingId, dates: [] });
     }
@@ -99,20 +111,30 @@ const updateAvailability = async (req: Request, res: Response) => {
         (d) => d.date.getTime() === fixedDate.getTime()
       );
 
-      const dateData = {
-        date: fixedDate,
-        isBlocked: isBlocked ?? false,
-        customPrice: customPrice || null,
-        minimumStay: minimumStay || calendar.defaultMinimumStay,
-        note: note || "",
-      };
-
       if (existingDateIndex >= 0) {
+        const existingDate = calendar.dates[existingDateIndex];
+        const dateData = {
+          date: fixedDate,
+          isBlocked:
+            isBlocked !== undefined ? isBlocked : existingDate.isBlocked,
+          customPrice:
+            customPrice !== undefined ? customPrice : existingDate.customPrice,
+          minimumStay:
+            minimumStay !== undefined ? minimumStay : existingDate.minimumStay,
+          note: note !== undefined ? note : existingDate.note,
+        };
         Object.assign(calendar.dates[existingDateIndex], {
           ...dateData,
           isBooked: false,
         });
       } else {
+        const dateData = {
+          date: fixedDate,
+          isBlocked: isBlocked ?? false,
+          customPrice: customPrice || null,
+          minimumStay: minimumStay || calendar.defaultMinimumStay,
+          note: note || "",
+        };
         calendar.dates.push({ ...dateData, isBooked: false });
       }
     }
@@ -138,6 +160,8 @@ const blockDates = async (req: Request, res: Response) => {
 
     // Verify listing ownership
     const listing = await Listing.findOne({ _id: listingId, host: userId });
+    console.log("----listing----", listing);
+
     if (!listing) {
       res.status(403).json({ message: "Unauthorized or listing not found" });
       return;
@@ -158,6 +182,7 @@ const blockDates = async (req: Request, res: Response) => {
     );
 
     return result;
+    // res.status(200).json({ message: "Blocked dates successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });

@@ -1,14 +1,16 @@
 import { MultiStepForm } from "@/components/shared/MultiStepForm";
 import { Spinner } from "@/components/shared/Spinner";
 import { Button } from "@/components/ui/button";
+import queryClient from "@/config/query";
 // import { paths } from "@/constants/paths";
 import { queryKeys } from "@/constants/query-keys";
 import { DialogTypeEnum, useDialog } from "@/hooks/useDialog";
 import listingService from "@/services/listing";
-import { useQuery } from "@tanstack/react-query";
-import { PlusIcon } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { PenIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 // import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const HostListingsPage = () => {
   const { data, isLoading } = useQuery({
@@ -21,6 +23,34 @@ const HostListingsPage = () => {
   const [activeListingId, setActiveListingId] = useState<string | null>(null);
 
   const hostListings = data?.data.listings;
+
+  const { mutate: removeListingMutate } = useMutation({
+    mutationFn: listingService.removeListing,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.HOST_LISTINGS] });
+    },
+  });
+
+  const removeListing = (id: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        removeListingMutate(id);
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your listing has been deleted.",
+          icon: "success",
+        });
+      }
+    });
+  };
 
   return (
     <div className="px-[24px]">
@@ -59,14 +89,25 @@ const HostListingsPage = () => {
                   alt="listing"
                   className="w-full h-full object-cover rounded bg-gray-400"
                 />
-                <div className="absolute top-2 right-2">
+                <div className="absolute top-2 right-2 flex items-center gap-2 ">
                   <Button
+                    size={"icon"}
+                    variant={"secondary"}
+                    className="cursor-pointer"
                     onClick={() => {
                       setActiveListingId(listing._id);
                       openDialog(DialogTypeEnum.EDIT_LISTING);
                     }}
                   >
-                    Edit
+                    <PenIcon className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    className="cursor-pointer"
+                    size={"icon"}
+                    variant={"destructive"}
+                    onClick={() => removeListing(listing._id)}
+                  >
+                    <Trash2Icon className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
