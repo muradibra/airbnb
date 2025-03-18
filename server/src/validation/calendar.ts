@@ -14,10 +14,20 @@ export const updateAvailabilitySchema: Schema = {
       options: { strict: true },
       errorMessage: "End date must be a valid ISO date",
     },
+    optional: true, // Make it optional to allow single date selection
     custom: {
       options: (value, { req }) => {
-        if (new Date(value) <= new Date(req.body.startDate)) {
-          throw new Error("End date must be after start date");
+        if (value) {
+          const startDate = new Date(req.body.startDate);
+          const endDate = new Date(value);
+
+          // ✅ Allow single-day blocking (startDate === endDate)
+          if (endDate.getTime() >= startDate.getTime()) {
+            return true;
+          }
+
+          // ❌ If endDate is before startDate, throw an error
+          throw new Error("End date must be after or equal to start date");
         }
         return true;
       },

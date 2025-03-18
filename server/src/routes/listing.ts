@@ -34,7 +34,7 @@ router.put(
   listingController.update
 );
 router.delete(
-  "delete/:id",
+  "/delete/:id",
   authorize({ isHost: true }),
   listingController.remove
 );

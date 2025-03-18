@@ -23,7 +23,7 @@ router.get("/:listingId", calendarController.getAvailability);
 // );
 
 // Update availability
-router.put(
+router.patch(
   "/:listingId",
   authorize({ isHost: true }),
   validateSchema(updateAvailabilitySchema),
@@ -31,20 +31,20 @@ router.put(
 );
 
 // Block dates
-router.post(
-  "/:listingId/block",
-  authorize({ isHost: true }),
-  validateSchema(blockDatesSchema),
-  calendarController.blockDates
-);
+// router.post(
+//   "/:listingId/block",
+//   authorize({ isHost: true }),
+//   validateSchema(updateAvailabilitySchema),
+//   calendarController.blockDates
+// );
 
 // Set custom pricing
-router.post(
-  "/:listingId/price",
-  authorize({ isHost: true }),
-  validateSchema(customPricingSchema),
-  calendarController.setCustomPricing
-);
+// router.post(
+//   "/:listingId/price",
+//   authorize({ isHost: true }),
+//   validateSchema(customPricingSchema),
+//   calendarController.setCustomPricing
+// );
 
 // Set minimum stay
 router.put(

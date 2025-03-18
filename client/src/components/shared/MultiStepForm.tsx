@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,43 +48,43 @@ import categoryService from "@/services/category";
 import { toast } from "sonner";
 import { queryKeys } from "@/constants/query-keys";
 import { DialogTypeEnum, useDialog } from "@/hooks/useDialog";
+import queryClient from "@/config/query";
 
-const getFormSchema = (isEdit: boolean) =>
-  z.object({
-    title: z.string().min(2).max(50),
-    description: z.string().min(10).max(200),
-    category: z.string(),
-    address: z.object({
-      country: z.string().min(1),
-      street: z.string().min(5, "Street address is required!"),
-      city: z.string().min(3, "City is required!"),
-      state: z.string().optional(),
-      zip: z.string().optional(),
-    }),
-    amenities: z.array(z.string()),
-    conditions: z.object({
-      maxGuestCount: z.number().positive().min(1),
-      bedroomCount: z.number().positive().min(0),
-      bedCount: z.number().positive().min(1),
-      bathroomCount: z.number().positive().min(1),
-    }),
-    pricePerNight: z
-      .number({
-        invalid_type_error: "Price must be a number",
-        required_error: "Price is required",
+const formSchema = z.object({
+  title: z.string().min(2).max(50),
+  description: z.string().min(10).max(200),
+  category: z.string(),
+  address: z.object({
+    country: z.string().min(1),
+    street: z.string().min(5, "Street address is required!"),
+    city: z.string().min(3, "City is required!"),
+    state: z.string().optional(),
+    zip: z.string().optional(),
+  }),
+  amenities: z.array(z.string()),
+  conditions: z.object({
+    maxGuestCount: z.number().positive().min(1),
+    bedroomCount: z.number().positive().min(0),
+    bedCount: z.number().positive().min(1),
+    bathroomCount: z.number().positive().min(1),
+  }),
+  pricePerNight: z
+    .number({
+      invalid_type_error: "Price must be a number",
+      required_error: "Price is required",
+    })
+    .positive(),
+  images: z
+    .array(
+      z.object({
+        id: z.string(),
+        file: z.union([z.string(), z.any()]),
+        preview: z.string(),
       })
-      .positive(),
-    images: z
-      .array(
-        z.object({
-          id: z.string(),
-          file: z.union([z.string(), z.any()]),
-          preview: z.string(),
-        })
-      )
-      .min(5, "Minimum 5 images required")
-      .max(100, "Maximum 100 images allowed"),
-  });
+    )
+    .min(5, "Minimum 5 images required")
+    .max(100, "Maximum 100 images allowed"),
+});
 
 const steps = [
   "Basic Info",
@@ -102,8 +102,8 @@ export const MultiStepForm = ({
   type: DialogTypeEnum;
   listingId?: string;
 }) => {
-  const { isOpen, openDialog, closeDialog } = useDialog();
-  const [formKey, setFormKey] = useState(0);
+  const { isOpen, closeDialog } = useDialog();
+  const [formKey] = useState(0);
   const isEdit = type === DialogTypeEnum.EDIT_LISTING;
   const [step, setStep] = useState(0);
   const [images, setImages] = useState<ImageFile[]>([]);
@@ -144,6 +144,7 @@ export const MultiStepForm = ({
       setStep(0);
       closeDialog();
       toast.success(data?.data?.message || "Listing created successfully!");
+      queryClient.invalidateQueries({ queryKey: [queryKeys.HOST_LISTINGS] });
     },
   });
 
@@ -155,10 +156,11 @@ export const MultiStepForm = ({
       setStep(0);
       closeDialog();
       toast.success(data?.data?.message || "Listing updated successfully!");
+      queryClient.invalidateQueries({ queryKey: [queryKeys.HOST_LISTINGS] });
     },
   });
 
-  const formSchema = useMemo(() => getFormSchema(isEdit), [isEdit]);
+  // const formSchema = useMemo(() => getFormSchema(isEdit), [isEdit]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -190,6 +192,14 @@ export const MultiStepForm = ({
       fetchListing();
     }
   }, [isEdit, listingId, fetchListing]);
+
+  useEffect(() => {
+    if (type === DialogTypeEnum.CREATE_LISTING) {
+      form.reset();
+      setImages([]);
+      setStep(0);
+    }
+  }, [type]);
 
   useEffect(() => {
     if (isEdit && editedListing) {
@@ -310,42 +320,39 @@ export const MultiStepForm = ({
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("values", values);
+
+    const transformedValues = {
+      ...values,
+      address: {
+        ...values.address,
+        state: values.address.state || "",
+        zip: values.address.zip || "",
+      },
+      images: values.images.map((image) => image.file),
+    };
     if (isEdit && listingId) {
-      const transformedValues = {
-        ...values,
-        address: {
-          ...values.address,
-          state: values.address.state || "",
-          zip: values.address.zip || "",
-        },
-        images: values.images.map((image) =>
-          typeof image.file === "string" ? image.file : image.file
-        ),
-      };
-
       console.log("-------editing-------", transformedValues);
-
       mutateEdit({ data: transformedValues, id: listingId });
     } else {
-      const transformedValues = {
-        ...values,
-        address: {
-          ...values.address,
-          state: values.address.state || "",
-          zip: values.address.zip || "",
-        },
-        images: values.images.map((image) => image.file),
-      };
+      // const transformedValues = {
+      //   ...values,
+      //   address: {
+      //     ...values.address,
+      //     state: values.address.state || "",
+      //     zip: values.address.zip || "",
+      //   },
+      //   images: values.images.map((image) => image.file),
+      // };
       console.log("------creating: transformedValues------", transformedValues);
 
       mutateCreate(transformedValues);
     }
-    // mutate(transformedValues);
   }
 
   const categoriesData = categories?.data.items;
 
-  console.log("errors", form.formState.errors);
+  // console.log("errors", form.formState.errors);
 
   // console.log(
   //   form
@@ -759,7 +766,7 @@ export const MultiStepForm = ({
                       ? form.handleSubmit(onSubmit)
                       : undefined
                   }
-                  disabled={isCreatePending}
+                  disabled={isCreatePending || isEditPending}
                 >
                   Submit <FaCheck />
                 </Button>
