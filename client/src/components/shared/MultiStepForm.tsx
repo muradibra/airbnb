@@ -53,7 +53,9 @@ import queryClient from "@/config/query";
 const formSchema = z.object({
   title: z.string().min(2).max(50),
   description: z.string().min(10).max(200),
-  category: z.string(),
+  category: z.string().min(1, {
+    message: "Category is required",
+  }),
   address: z.object({
     country: z.string().min(1),
     street: z.string().min(5, "Street address is required!"),

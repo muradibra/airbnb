@@ -17,6 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import categoryService from "@/services/category";
 import { queryKeys } from "@/constants/query-keys";
 import { toast } from "sonner";
+import { paths } from "@/constants/paths";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -141,7 +142,10 @@ export const columns: ColumnDef<Category>[] = [
               </div>
             </PopoverContent>
           </Popover>
-          <Link className="" to={`/dashboard/categories/${row.original._id}`}>
+          <Link
+            className=""
+            to={paths.DASHBOARD.CATEGORIES.EDIT(row.original._id)}
+          >
             <Button
               size={"icon"}
               variant={"outline"}

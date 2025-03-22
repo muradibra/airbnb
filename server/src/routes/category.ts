@@ -12,12 +12,13 @@ const router = Router();
 
 router.get("/all", categoryController.getAll);
 router.post(
-  "/",
+  "/create",
   authorize({ isAdmin: true }),
   uploadCategory.single("icon"),
   validateSchema(createCategoryValidation),
   categoryController.create
 );
+router.get("/:id", authorize({ isAdmin: true }), categoryController.getById);
 router.put(
   "/:id",
   authorize({ isAdmin: true }),

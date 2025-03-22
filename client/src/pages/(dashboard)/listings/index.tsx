@@ -2,19 +2,20 @@ import { Spinner } from "@/components/shared/Spinner";
 import { Button } from "@/components/ui/button";
 import { paths } from "@/constants/paths";
 import { queryKeys } from "@/constants/query-keys";
-import userService from "@/services/user";
+import listingService from "@/services/listing";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { columns } from "./columns";
 import { DataTable } from "@/components/shared/data-table/DataTable";
 
-const DashboardUsersPage = () => {
+const ListingsPage = () => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: [queryKeys.ADMIN_USERS],
-    queryFn: userService.getAllUsers,
+    queryKey: [queryKeys.LISTINGS],
+    queryFn: listingService.getListings,
   });
 
-  const users = data?.data.users || [];
+  const listings = data?.data;
+  console.log(listings);
 
   if (isLoading) {
     <div className="flex flex-col gap-1 jkustify-center items-center mt-32">
@@ -30,7 +31,7 @@ const DashboardUsersPage = () => {
           Something went wrong!
         </p>
         <Button className="mt-4" variant={"secondary"}>
-          <Link to={paths.HOME} className="text-[#FF385C]">
+          <Link to={paths.DASHBOARD.MAIN} className="text-[#FF385C]">
             Go Back To Home
           </Link>
         </Button>
@@ -38,16 +39,21 @@ const DashboardUsersPage = () => {
     );
   }
 
+  console.log("Debugging listings:", listings);
+
   return (
     <div className="pt-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-white font-bold text-2xl">Users</h2>
+        <h2 className="font-bold text-2xl">Listings</h2>
+        {/* <Button variant={"outline"} asChild>
+          <Link to={paths.DASHBOARD.CATEGORIES.CREATE}>Create Category</Link>
+        </Button> */}
       </div>
-      <div className="bg-white rounded-md shadow-md">
-        <DataTable columns={columns} data={users} />
+      <div className="bg-white rounded-[10px]">
+        <DataTable columns={columns} data={listings ? listings.listings : []} />
       </div>
     </div>
   );
 };
 
-export default DashboardUsersPage;
+export default ListingsPage;

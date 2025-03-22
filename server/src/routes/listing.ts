@@ -7,7 +7,7 @@ import { uploadBnb } from "../middlewares/uploadBnb";
 
 const router = Router();
 
-router.get("/", validateSchema(getListingsSchema), listingController.getAll);
+router.get("/all", validateSchema(getListingsSchema), listingController.getAll);
 router.get(
   "/host",
   authorize({ isHost: true }),

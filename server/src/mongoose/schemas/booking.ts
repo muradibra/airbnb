@@ -33,18 +33,22 @@ const bookingSchema = new Schema({
     adults: {
       type: Number,
       required: true,
+      default: 1,
     },
     children: {
       type: Number,
       required: true,
+      default: 0,
     },
     infants: {
       type: Number,
       required: true,
+      default: 0,
     },
     pets: {
       type: Number,
       required: true,
+      default: 0,
     },
   },
   listing: {
@@ -66,7 +70,7 @@ const bookingSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "completed", "cancelled"],
+    enum: ["pending", "approved", "rejected"],
     default: "pending",
   },
   paymentStatus: {
@@ -75,6 +79,10 @@ const bookingSchema = new Schema({
     default: "pending",
   },
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },

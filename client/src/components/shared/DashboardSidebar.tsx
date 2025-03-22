@@ -111,10 +111,10 @@ export const SideBarItems = [
 ];
 export const DashboardSidebar = () => {
   return (
-    <Sidebar>
-      <SidebarGroupContent>
+    <Sidebar className="">
+      <SidebarGroupContent className="">
         <SidebarGroup>
-          <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+          <SidebarGroupLabel className="">Airbnb Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {SideBarItems.map((item) => (

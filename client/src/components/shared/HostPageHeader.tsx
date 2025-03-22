@@ -8,7 +8,7 @@ import { paths } from "@/constants/paths";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { logoutAsync, selectAuth } from "@/store/auth";
 import { FaBars, FaChevronDown } from "react-icons/fa";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Spinner } from "./Spinner";
 
 const HostPageHeader = () => {
@@ -20,13 +20,13 @@ const HostPageHeader = () => {
   return (
     <header className="host-page-header px-[21px] py-[10px] border-b border-[#dfdfdf]">
       <div className="header-inner flex justify-between items-center">
-        <div className="logo w-[46px] h-[53px]">
+        <Link to={paths.HOST.MAIN} className="logo w-[46px] h-[53px]">
           <img
             src="/src/assets/images/airbnb-host-icon.png"
             className="w-full h-full object-cover"
             alt="Logo"
           />
-        </div>
+        </Link>
 
         <ul className="header-middle hidden xl:flex items-center gap-6">
           <li>
@@ -66,6 +66,18 @@ const HostPageHeader = () => {
             </NavLink>
           </li>
           <li>
+            <NavLink
+              to={paths.HOST.BOOKINGS.MAIN}
+              className={() =>
+                location.pathname === paths.HOST.BOOKINGS.MAIN
+                  ? "active-link"
+                  : undefined
+              }
+            >
+              Bookings
+            </NavLink>
+          </li>
+          <li>
             <DropdownMenu>
               <DropdownMenuTrigger className="cursor-pointer">
                 Menu
@@ -74,7 +86,7 @@ const HostPageHeader = () => {
               <DropdownMenuContent>
                 <DropdownMenuItem
                   onClick={() =>
-                    navigate(`${paths.HOST.MAIN}?createListing=true`)
+                    navigate(`${paths.HOST.LISTINGS.MAIN}?createListing=true`)
                   }
                   className="cursor-pointer hover:bg-[#e8e8e8]"
                 >

@@ -136,13 +136,36 @@ const getAll = async (req: Request, res: Response) => {
       (await Listing.countDocuments(filterQuery)) > Number(skip) + Number(take);
 
     const listings = await Listing.find(filterQuery)
-      .populate("category", "name description icon")
-      .populate("host", "name email")
+      .populate<{
+        category: { name: string; description: string; icon?: string };
+      }>("category", "name description icon")
+      .populate<{
+        host: { _id: string; name: string; email: string; avatar?: string };
+      }>("host", "_id name email avatar")
       .populate("address")
       .populate("reviews")
+      .select("-__v")
       .sort(sortQuery)
       .skip(Number(skip))
       .limit(Number(take));
+
+    const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+
+    listings.forEach((listing) => {
+      if (listing.category && listing.category.icon) {
+        if (!listing.category.icon.startsWith(BASE_URL)) {
+          listing.category.icon = `${BASE_URL}/${listing.category.icon}`;
+        }
+      }
+      if (listing.host && listing.host.avatar) {
+        if (!listing.host.avatar.startsWith(BASE_URL)) {
+          listing.host.avatar = `${BASE_URL}/${listing.host.avatar}`;
+        }
+      }
+      listing.images = listing.images.map((image) =>
+        image.startsWith(BASE_URL) ? image : `${BASE_URL}/${image}`
+      );
+    });
 
     const listingsCount = await Listing.countDocuments(filterQuery);
 
