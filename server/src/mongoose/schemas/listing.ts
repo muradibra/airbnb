@@ -10,7 +10,9 @@ interface IListing extends Document {
     country: string;
     zipCode?: string;
   };
-  category: Types.ObjectId;
+  category:
+    | Types.ObjectId
+    | { _id: string; name: string; description: string; icon: string };
   images: string[];
   amenities: string[];
   pricePerNight: number;
@@ -19,7 +21,9 @@ interface IListing extends Document {
   bedCount: number;
   bathroomCount: number;
   maxGuestCount: number;
-  host: Types.ObjectId;
+  host:
+    | Types.ObjectId
+    | { _id: string; name: string; email: string; avatar: string };
   availability: [
     {
       startDate: Date;

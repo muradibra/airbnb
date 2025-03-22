@@ -28,9 +28,9 @@ const DashboardLayout = () => {
   return (
     <SidebarProvider>
       <DashboardSidebar />
-      <main className="w-full px-6 relative pt-4">
-        <SidebarTrigger className="absolute left-8 top-6 cursor-pointer text-[#FF385C] " />
-        <div className="p-6 rounded-[10px] bg-white w-full">
+      <main className="w-full px-6 relative pt-4 ">
+        <SidebarTrigger className="absolute left-8 top-6 cursor-pointer text-[#FF385C] transition-all duration-200 hover:text-[#FF385C]" />
+        <div className="p-6 rounded-[10px] w-full ">
           <Outlet />
         </div>
       </main>

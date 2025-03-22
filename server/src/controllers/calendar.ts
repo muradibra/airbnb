@@ -27,7 +27,7 @@ const setMidnightUTC = (date: Date) => {
     )
   );
 
-  console.log("⏳ Fixed Date:", fixedDate.toISOString());
+  // console.log("⏳ Fixed Date:", fixedDate.toISOString());
 
   return fixedDate;
 };
@@ -44,7 +44,7 @@ const getAvailability = async (req: Request, res: Response) => {
       return;
     }
 
-    console.log("📅 Calendar:", calendar);
+    // console.log("📅 Calendar:", calendar);
 
     // Filter dates within the requested range
     const availabilityInRange =
@@ -160,7 +160,7 @@ const blockDates = async (req: Request, res: Response) => {
 
     // Verify listing ownership
     const listing = await Listing.findOne({ _id: listingId, host: userId });
-    console.log("----listing----", listing);
+    // console.log("----listing----", listing);
 
     if (!listing) {
       res.status(403).json({ message: "Unauthorized or listing not found" });

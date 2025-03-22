@@ -8,7 +8,7 @@ import { DialogTypeEnum, useDialog } from "@/hooks/useDialog";
 import listingService from "@/services/listing";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { PenIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -17,10 +17,18 @@ const HostListingsPage = () => {
     queryKey: [queryKeys.HOST_LISTINGS],
     queryFn: listingService.getHostListings,
   });
-  // const navigate = useNavigate();
+  const searchParams = new URLSearchParams(window.location.search);
+  const isCreateListing = searchParams.get("createListing") === "true";
+  // console.log("isCreateListing:", isCreateListing);
 
   const { openDialog, type } = useDialog();
   const [activeListingId, setActiveListingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isCreateListing) {
+      openDialog(DialogTypeEnum.CREATE_LISTING);
+    }
+  }, [isCreateListing]);
 
   const hostListings = data?.data.listings;
 

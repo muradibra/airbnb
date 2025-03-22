@@ -1,6 +1,10 @@
 import axiosInstance from "../axiosInstance";
 import { CreateListing, CreateListingData, GetHostListings } from "./types";
 
+const getListings = async () => {
+  return axiosInstance.get("/listing/all");
+};
+
 const getHostListings = async () => {
   return axiosInstance.get<GetHostListings>("/listing/host");
 };
@@ -90,6 +94,7 @@ export const removeListing = async (id: string) => {
 };
 
 const listingService = {
+  getListings,
   getHostListings,
   getHostListingById,
   createListing,

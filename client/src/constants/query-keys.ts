@@ -1,4 +1,6 @@
 export const queryKeys = {
+  LISTINGS: "listings",
+  LISTING_BY_ID: "listing-by-id",
   ADMIN_USERS: "admin-users",
   ADMIN_LISTINGS: "admin-listings",
   ADMIN_BOOKINGS: "admin-bookings",

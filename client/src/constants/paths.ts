@@ -27,7 +27,7 @@ export const paths = {
     CATEGORIES: {
       LIST: "/dashboard/categories",
       CREATE: "/dashboard/categories/create",
-      EDIT: (id: string) => `/dashboard/categories/:${id}/edit`,
+      EDIT: (id = ":id") => `/dashboard/categories/${id}/edit`,
     },
   },
   AUTH: {

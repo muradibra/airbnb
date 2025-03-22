@@ -14,6 +14,8 @@ import HostLayout from "@/components/shared/layouts/HostLayout";
 import HostMainPage from "@/pages/(business)/host-main";
 import HostListingsPage from "@/pages/(business)/host-listings";
 import HostCalendarPage from "@/pages/(business)/host-calendar";
+import ListingsPage from "@/pages/(dashboard)/listings";
+import HostBookingsPage from "@/pages/(business)/host-bookings";
 
 export const router = createBrowserRouter([
   {
@@ -56,8 +58,12 @@ export const router = createBrowserRouter([
             element: <CategoryCreatePage />,
           },
           {
-            path: paths.DASHBOARD.CATEGORIES.EDIT(":id"),
+            path: paths.DASHBOARD.CATEGORIES.EDIT(),
             element: <CategoryUpdatePage />,
+          },
+          {
+            path: paths.DASHBOARD.LISTINGS.LIST,
+            element: <ListingsPage />,
           },
         ],
       },
@@ -78,6 +84,10 @@ export const router = createBrowserRouter([
       {
         path: paths.HOST.CALENDAR,
         element: <HostCalendarPage />,
+      },
+      {
+        path: paths.HOST.BOOKINGS.MAIN,
+        element: <HostBookingsPage />,
       },
     ],
   },
