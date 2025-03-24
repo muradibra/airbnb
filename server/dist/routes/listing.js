@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const validate_1 = __importDefault(require("../middlewares/validate"));
+const listing_1 = require("../validation/listing");
+const listing_2 = __importDefault(require("../controllers/listing"));
+const auth_1 = require("../middlewares/auth");
+const uploadBnb_1 = require("../middlewares/uploadBnb");
+const router = (0, express_1.Router)();
+router.get("/all", (0, validate_1.default)(listing_1.getListingsSchema), listing_2.default.getAll);
+router.get("/host", (0, auth_1.authorize)({ isHost: true }), listing_2.default.getHostListings);
+router.get("/host/listing/:id", (0, auth_1.authorize)({ isHost: true }), listing_2.default.getHostListingById);
+router.get("/:id", listing_2.default.getById);
+router.post("/create", (0, auth_1.authorize)({ isHost: true }), uploadBnb_1.uploadBnb.array("images", 100), (0, validate_1.default)(listing_1.createListingSchema), listing_2.default.create);
+router.put("/update/:id", (0, auth_1.authorize)({ isHost: true }), uploadBnb_1.uploadBnb.any(), (0, validate_1.default)(listing_1.createListingSchema), listing_2.default.update);
+router.delete("/delete/:id", (0, auth_1.authorize)({ isHost: true }), listing_2.default.remove);
+exports.default = router;

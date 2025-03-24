@@ -90,8 +90,6 @@ out
 .nuxt
 
 
-dist
-
 
 # Gatsby files
 .cache/
