@@ -9,6 +9,13 @@ import "./config/auth-strategy";
 
 import authRoutes from "./routes/auth";
 import categoryRoutes from "./routes/category";
+import listingRoutes from "./routes/listing";
+import changeRoleRoutes from "./routes/role";
+import reviewRoutes from "./routes/review";
+import wishlistRoutes from "./routes/wishlist";
+import userRoutes from "./routes/user";
+import calendarRoutes from "./routes/calendar";
+import bookingRoutes from "./routes/booking";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -40,6 +47,13 @@ app.use(passport.session());
 app.use("/public", express.static("./public"));
 app.use("/auth", authRoutes);
 app.use("/category", categoryRoutes);
+app.use("/listing", listingRoutes);
+app.use("/change-role", changeRoleRoutes);
+app.use("/review", reviewRoutes);
+app.use("/wishlist", wishlistRoutes);
+app.use("/user", userRoutes);
+app.use("/calendar", calendarRoutes);
+app.use("/booking", bookingRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`server is running on port ${process.env.PORT}`);

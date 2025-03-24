@@ -4,11 +4,8 @@ import mongoose from "mongoose";
 dotenv.config();
 
 async function main() {
-  const username = process.env.DB_USERNAME;
-  const password = process.env.DB_PASSWORD;
-  await mongoose.connect(
-    `mongodb+srv://${username}:${password}@cluster0.lrrw8.mongodb.net/airbnb?retryWrites=true&w=majority&appName=Cluster0`
-  );
+  const MongoDbURI = process.env.MONGODB_URI;
+  await mongoose.connect(MongoDbURI!);
 }
 
 main()

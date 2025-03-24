@@ -1,4 +1,41 @@
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema, Types, Document } from "mongoose";
+
+interface IListing extends Document {
+  title: string;
+  description: string;
+  address: {
+    street: string;
+    city: string;
+    state?: string;
+    country: string;
+    zipCode?: string;
+  };
+  category:
+    | Types.ObjectId
+    | { _id: string; name: string; description: string; icon: string };
+  images: string[];
+  amenities: string[];
+  pricePerNight: number;
+  discountedPricePerNight?: number;
+  bedroomCount: number;
+  bedCount: number;
+  bathroomCount: number;
+  maxGuestCount: number;
+  host:
+    | Types.ObjectId
+    | { _id: string; name: string; email: string; avatar: string };
+  availability: [
+    {
+      startDate: Date;
+      endDate: Date;
+    }
+  ];
+  reservations: Types.ObjectId;
+  reviews: Types.ObjectId[];
+  averageRating: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const listingSchema = new Schema({
   title: {
@@ -8,40 +45,21 @@ const listingSchema = new Schema({
   },
   description: {
     type: String,
-    maxLength: 500,
+    maxLength: 1500,
     required: true,
   },
   address: {
-    street: {
-      type: String,
-      required: true,
-    },
-    city: {
-      type: String,
-      required: true,
-    },
-    state: {
-      type: String,
-      required: true,
-    },
-    country: {
-      type: String,
-      required: true,
-    },
-    zipCode: {
-      type: String,
-      required: true,
-    },
+    type: Types.ObjectId,
+    ref: "Location",
+    required: true,
   },
-  categories: [
-    {
-      type: Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
-  ],
+  category: {
+    type: Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
   images: [{ type: String, required: true }],
-  ameneties: [{ type: String }],
+  amenities: [{ type: String }],
   pricePerNight: {
     type: Number,
     required: true,
@@ -50,35 +68,21 @@ const listingSchema = new Schema({
     type: Number,
     required: false,
   },
-  bedrooms: {
+  maxGuestCount: {
     type: Number,
     required: true,
   },
-  beds: {
+  bedroomCount: {
     type: Number,
     required: true,
   },
-  bathrooms: {
+  bedCount: {
     type: Number,
     required: true,
   },
-  guestRestrictions: {
-    maxAdults: {
-      type: Number,
-      required: true,
-    },
-    maxChildren: {
-      type: Number,
-      required: true,
-    },
-    maxInfants: {
-      type: Number,
-      required: true,
-    },
-    maxPets: {
-      type: Number,
-      required: true,
-    },
+  bathroomCount: {
+    type: Number,
+    required: true,
   },
   host: {
     type: Types.ObjectId,
@@ -99,47 +103,56 @@ const listingSchema = new Schema({
   ],
   reservations: [
     {
-      startDate: {
-        type: Date,
-        required: true,
-      },
-      endDate: {
-        type: Date,
-        required: true,
-      },
-      guest: {
-        type: Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
+      type: Types.ObjectId,
+      ref: "Booking",
+      // {
+      //   startDate: {
+      //     type: Date,
+      //     required: true,
+      //   },
+      //   endDate: {
+      //     type: Date,
+      //     required: true,
+      //   },
+      //   renter: {
+      //     type: Types.ObjectId,
+      //     ref: "User",
+      //     required: true,
+      //   },
+      // },
     },
   ],
-  ratings: [
-    {
-      user: {
-        type: Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-      rating: {
-        type: Number,
-        required: true,
-      },
-      comment: {
-        type: String,
-        maxLength: 500,
-        required: false,
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
-      updatedAt: {
-        type: Date,
-        default: Date.now,
-      },
-    },
-  ],
+  reviews: {
+    type: [Types.ObjectId],
+    ref: "Review",
+    // required: false,
+  },
+  // ratings: [
+  //   {
+  //     user: {
+  //       type: Types.ObjectId,
+  //       ref: "User",
+  //       required: true,
+  //     },
+  //     rating: {
+  //       type: Number,
+  //       required: true,
+  //     },
+  //     comment: {
+  //       type: String,
+  //       maxLength: 500,
+  //       required: false,
+  //     },
+  //     createdAt: {
+  //       type: Date,
+  //       default: Date.now,
+  //     },
+  //     updatedAt: {
+  //       type: Date,
+  //       default: Date.now,
+  //     },
+  //   },
+  // ],
   averageRating: {
     type: Number,
     default: 0,
@@ -154,6 +167,6 @@ const listingSchema = new Schema({
   },
 });
 
-const Listing = mongoose.model("listing", listingSchema);
+const Listing = mongoose.model<IListing>("Listing", listingSchema);
 
 export default Listing;

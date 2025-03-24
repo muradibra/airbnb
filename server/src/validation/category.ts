@@ -27,3 +27,20 @@ export const createCategoryValidation: Schema = {
     },
   },
 };
+
+export const editCategoryValidation: Schema = {
+  name: {
+    in: ["body"],
+    isString: true,
+    optional: true,
+  },
+  description: {
+    in: ["body"],
+    isString: true,
+    optional: true,
+  },
+  icon: {
+    in: ["body"],
+    optional: true,
+  },
+};

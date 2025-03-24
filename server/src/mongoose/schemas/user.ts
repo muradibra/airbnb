@@ -1,4 +1,22 @@
+import e from "express";
 import mongoose, { Types } from "mongoose";
+
+interface IUser extends Document {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  resetPasswordToken: string | null;
+  resetPasswordTokenExpires: Date | null;
+  avatar: string;
+  bio: string;
+  listings: Types.ObjectId[];
+  bookings: Types.ObjectId[];
+  wishlist: Types.ObjectId[];
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -10,6 +28,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+  },
+  phoneNumber: {
+    type: String,
+    unique: true,
+    required: true,
   },
   password: {
     type: String,
@@ -30,11 +53,6 @@ const userSchema = new mongoose.Schema({
   bio: {
     type: String,
     maxLength: 500,
-  },
-  phoneNumber: {
-    type: String,
-    unique: true,
-    required: true,
   },
   listings: {
     type: [Types.ObjectId],
@@ -63,6 +81,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;

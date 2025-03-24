@@ -1,5 +1,13 @@
 import mongoose, { Schema } from "mongoose";
 
+interface ICategory extends Document {
+  name: string;
+  description?: string;
+  icon: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const categorySchema = new Schema({
   name: {
     type: String,
@@ -23,6 +31,6 @@ const categorySchema = new Schema({
   },
 });
 
-const Category = mongoose.model("category", categorySchema);
+const Category = mongoose.model<ICategory>("Category", categorySchema);
 
 export default Category;

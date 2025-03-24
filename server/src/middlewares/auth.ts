@@ -2,8 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import { IUser, UserRole } from "../types/user";
 
-export const authorize = (options?: { isAdmin?: boolean }) => {
+export const authorize = (options?: {
+  isAdmin?: boolean;
+  isHost?: boolean;
+}) => {
   const isAdmin = !!options?.isAdmin;
+  const isHost = !!options?.isHost;
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.isAuthenticated()) {
@@ -12,6 +16,11 @@ export const authorize = (options?: { isAdmin?: boolean }) => {
       }
 
       if (isAdmin && req.user?.role !== UserRole.ADMIN) {
+        res.status(403).json({ message: "Forbidden!" });
+        return;
+      }
+
+      if (isHost && req.user?.role !== UserRole.HOST) {
         res.status(403).json({ message: "Forbidden!" });
         return;
       }
@@ -29,17 +38,18 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     "local",
     function (err: Error, user: IUser, info: { message?: string }) {
       if (err) {
-        return res.status(500).json({ message: "Internal server error!" });
+        res.status(500).json({ message: "Internal server error!" });
+        return;
       }
       if (info?.message || !user) {
-        return res
-          .status(401)
-          .json({ message: info?.message || "Unauthorized!" });
+        res.status(401).json({ message: info?.message || "Unauthorized!" });
+        return;
       }
 
       req.login(user, function (err) {
         if (err) {
-          return res.status(500).json({ message: "Internal server error!" });
+          res.status(500).json({ message: "Internal server error!" });
+          return;
         }
         next();
       });

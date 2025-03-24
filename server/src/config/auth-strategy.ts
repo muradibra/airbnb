@@ -23,6 +23,7 @@ passport.deserializeUser(async function (id, done) {
       wishlist: Array.isArray(user.wishlist)
         ? user.wishlist.map((wish: any) => wish.toString())
         : [],
+      resetPasswordToken: user.resetPasswordToken ?? undefined,
       resetPasswordTokenExpires: user.resetPasswordTokenExpires?.toString(),
       createdAt: user.createdAt?.toString(),
       updatedAt: user.updatedAt?.toString(),
