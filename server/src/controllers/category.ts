@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Category from "../mongoose/schemas/category";
-import { get } from "http";
 import Listing from "../mongoose/schemas/listing";
 
 const getAll = async (req: Request, res: Response) => {

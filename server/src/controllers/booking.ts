@@ -105,7 +105,7 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
             isBooked: true,
             isBlocked: false,
             customPrice: 0, // Default value, adjust as needed
-            minimumStay: 1, // Default value, adjust as needed
+            // minimumStay: 1, // Default value, adjust as needed
             note: "", // Default value, adjust as needed
           });
         }

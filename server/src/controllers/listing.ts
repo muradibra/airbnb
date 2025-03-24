@@ -7,7 +7,7 @@ import Booking from "../mongoose/schemas/booking";
 import Location from "../mongoose/schemas/location";
 import User from "../mongoose/schemas/user";
 import Review from "../mongoose/schemas/review";
-import Wishlist from "../mongoose/schemas/wishlist";
+// import Wishlist from "../mongoose/schemas/wishlist";
 
 const getAll = async (req: Request, res: Response) => {
   try {
@@ -146,8 +146,8 @@ const getAll = async (req: Request, res: Response) => {
       .populate("reviews")
       .select("-__v")
       .sort(sortQuery)
-      .skip(Number(skip))
-      .limit(Number(take));
+      .skip(+skip)
+      .limit(+take);
 
     const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
@@ -169,9 +169,14 @@ const getAll = async (req: Request, res: Response) => {
 
     const listingsCount = await Listing.countDocuments(filterQuery);
 
-    res
-      .status(200)
-      .json({ success: true, count: listingsCount, hasMore, listings });
+    res.status(200).json({
+      success: true,
+      count: listingsCount,
+      hasMore,
+      listings,
+      skip: Number(skip),
+      take: Number(take),
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -186,18 +191,27 @@ const getById = async (req: Request, res: Response) => {
       .populate("category", "name description icon")
       .populate("host", "name email")
       .populate("address")
-      .populate("amenities")
-      .populate("calendar")
-      .populate("bookings")
-      .populate("reviews")
-      .populate("reviews.user");
+      // .populate("amenities")
+      // .populate("calendar")
+      .populate("reservations");
+    // .populate("reviews")
+    // .populate("reviews.user");
 
     if (!listing) {
       res.status(404).json({ message: "Listing not found" });
       return;
     }
 
-    res.status(200).json({ message: "Listing details fetched", listing });
+    const calendar = await Calendar.findOne({ listing: id });
+
+    if (!calendar) {
+      res.status(404).json({ message: "Calendar not found" });
+      return;
+    }
+
+    res
+      .status(200)
+      .json({ message: "Listing details fetched", listing, calendar });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -335,6 +349,7 @@ const create = async (req: Request, res: Response) => {
     await Calendar.create({
       listing: listing._id,
       dates: [],
+      defaultPrice: pricePerNight,
     });
 
     await Calendar.updateOne(

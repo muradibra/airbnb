@@ -70,8 +70,14 @@ const updateAvailability = async (req: Request, res: Response) => {
   try {
     const userId = req.user?._id;
     const { listingId } = req.params;
-    let { startDate, endDate, isBlocked, customPrice, minimumStay, note } =
-      req.body;
+    let {
+      startDate,
+      endDate,
+      isBlocked,
+      customPrice,
+      //  minimumStay,
+      note,
+    } = req.body;
 
     const sanitizedStartDate = setMidnightUTC(new Date(startDate));
     let sanitizedEndDate = endDate ? setMidnightUTC(new Date(endDate)) : null;
@@ -119,8 +125,8 @@ const updateAvailability = async (req: Request, res: Response) => {
             isBlocked !== undefined ? isBlocked : existingDate.isBlocked,
           customPrice:
             customPrice !== undefined ? customPrice : existingDate.customPrice,
-          minimumStay:
-            minimumStay !== undefined ? minimumStay : existingDate.minimumStay,
+          // minimumStay:
+          //   minimumStay !== undefined ? minimumStay : existingDate.minimumStay,
           note: note !== undefined ? note : existingDate.note,
         };
         Object.assign(calendar.dates[existingDateIndex], {
@@ -132,7 +138,7 @@ const updateAvailability = async (req: Request, res: Response) => {
           date: fixedDate,
           isBlocked: isBlocked ?? false,
           customPrice: customPrice || null,
-          minimumStay: minimumStay || calendar.defaultMinimumStay,
+          // minimumStay: minimumStay || calendar.defaultMinimumStay,
           note: note || "",
         };
         calendar.dates.push({ ...dateData, isBooked: false });

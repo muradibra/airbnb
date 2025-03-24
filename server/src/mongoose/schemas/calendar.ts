@@ -8,7 +8,6 @@ interface ICalendar extends Document {
       isBlocked: boolean;
       isBooked: boolean;
       customPrice: number;
-      minimumStay: number;
       note: string;
     }
   ];
@@ -58,10 +57,6 @@ const calendarSchema = new Schema({
         type: Number,
         default: null,
       },
-      minimumStay: {
-        type: Number,
-        default: 1,
-      },
       note: {
         type: String,
       },
@@ -70,6 +65,10 @@ const calendarSchema = new Schema({
   defaultMinimumStay: {
     type: Number,
     default: 1,
+  },
+  defaultPrice: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
     type: Date,

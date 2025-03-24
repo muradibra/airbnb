@@ -1,19 +1,22 @@
-import { Spinner } from "@/components/shared/Spinner";
-import { Button } from "@/components/ui/button";
-import bookingService from "@/services/booking";
+import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { PenIcon } from "lucide-react";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
-import queryClient from "@/config/query";
-import { Booking } from "@/types";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { PenIcon } from "lucide-react";
+import { Spinner } from "@/components/shared/Spinner";
+
+import { Booking } from "@/types";
 import { queryKeys } from "@/constants/query-keys";
+
+import bookingService from "@/services/booking";
+import queryClient from "@/config/query";
+import { format } from "date-fns";
 
 const HostBookingsPage = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -63,28 +66,28 @@ const HostBookingsPage = () => {
                 <th scope="col" className="px-6 py-3">
                   Listing Title
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 text-center">
                   Guest Name
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 text-center">
                   Guest Email
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 text-center">
                   Check-in Date
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 text-center">
                   Check-out Date
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 text-center">
                   Guest Count
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 text-center">
                   Total Price
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 text-center">
                   Payment Status
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3 text-center">
                   Status
                 </th>
                 <th scope="col" className="px-6 py-3"></th>
@@ -92,32 +95,44 @@ const HostBookingsPage = () => {
             </thead>
             <tbody>
               {bookings?.map((booking: Booking) => (
-                <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                <tr
+                  key={booking._id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+                >
                   <th
-                    key={booking._id}
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
                     {booking.listing.title}
                   </th>
-                  <td className="px-6 py-4">{booking.guest.name}</td>
-                  <td className="px-6 py-4">{booking.guest.email}</td>
-                  <td className="px-6 py-4">
-                    {new Date(booking.checkInDate).toLocaleDateString()}
+                  <td className="px-6 py-4 text-center">
+                    {booking.guest.name}
                   </td>
-                  <td className="px-6 py-4">
-                    {new Date(booking.checkOutDate).toLocaleDateString()}
+                  <td className="px-6 py-4 text-center">
+                    {booking.guest.email}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
+                    {format(new Date(booking.checkInDate), "dd/MM/yyyy")}
+                    {/* {new Date(booking.checkInDate).toLocaleDateString()} */}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {format(new Date(booking.checkOutDate), "dd/MM/yyyy")}
+                    {/* {new Date(booking.checkOutDate).toLocaleDateString()} */}
+                  </td>
+                  <td className="px-6 py-4 text-center">
                     {booking.guestsCount?.adults +
                       booking.guestsCount?.children +
                       booking.guestsCount?.infants +
                       booking.guestsCount?.pets}
                   </td>
-                  <td className="px-6 py-4">{booking.totalPrice}</td>
-                  <td className={`px-6 py-4 `}>{booking.paymentStatus}</td>
+                  <td className="px-6 py-4 text-center">
+                    {booking.totalPrice}
+                  </td>
+                  <td className={`px-6 py-4 text-center`}>
+                    {booking.paymentStatus}
+                  </td>
                   <td
-                    className={`px-6 py-4 font-bold uppercase ${
+                    className={`px-6 py-4 font-bold uppercase text-center ${
                       booking.status === "pending"
                         ? "text-yellow-400"
                         : booking.status === "approved"
@@ -142,6 +157,7 @@ const HostBookingsPage = () => {
                         ) : (
                           <>
                             <Button
+                              disabled={isUpdateStatusPending}
                               onClick={() => {
                                 mutateUpdateStatus({
                                   bookingId: booking._id,
@@ -155,6 +171,7 @@ const HostBookingsPage = () => {
                             </Button>
                             <Button
                               variant={"destructive"}
+                              disabled={isUpdateStatusPending}
                               className="text-white w-full"
                               onClick={() => {
                                 mutateUpdateStatus({

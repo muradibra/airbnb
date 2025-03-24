@@ -1,8 +1,47 @@
 import axiosInstance from "../axiosInstance";
 import { CreateListing, CreateListingData, GetHostListings } from "./types";
 
-const getListings = async () => {
-  return axiosInstance.get("/listing/all");
+type GetAllListingsPayload = {
+  skip?: number;
+  take?: number;
+  category: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  bedroomCount: string;
+  bedCount: string;
+  bathroomCount: string;
+  // maxGuestCount: string;
+  priceMin: string;
+  priceMax: string;
+  // sort: string;
+  amenities: string[];
+};
+
+const getListings = async (data?: GetAllListingsPayload) => {
+  const params = new URLSearchParams();
+  if (data?.skip) params.append("skip", data.skip.toString());
+  if (data?.take) params.append("take", data.take.toString());
+  if (data?.category) params.append("category", data.category);
+  if (data?.location) params.append("location", data.location);
+  if (data?.startDate) params.append("startDate", data.startDate);
+  if (data?.endDate) params.append("endDate", data.endDate);
+  if (data?.bedroomCount) params.append("bedroomCount", data.bedroomCount);
+  if (data?.bedCount) params.append("bedCount", data.bedCount);
+  if (data?.bathroomCount) params.append("bathroomCount", data.bathroomCount);
+  // if(data?.maxGuestCount) params.append("maxGuestCount", data.maxGuestCount);
+  if (data?.priceMin) params.append("priceMin", data.priceMin);
+  if (data?.priceMax) params.append("priceMax", data.priceMax);
+  // if(data?.sort) params.append("sort", data.sort);
+  data?.amenities.forEach((amenity) => {
+    params.append("amenities", amenity);
+  });
+
+  return axiosInstance.get(`/listing/all?${params.toString()}`);
+};
+
+const getListingById = async (id: string) => {
+  return axiosInstance.get(`/listing/${id}`);
 };
 
 const getHostListings = async () => {
@@ -95,6 +134,7 @@ export const removeListing = async (id: string) => {
 
 const listingService = {
   getListings,
+  getListingById,
   getHostListings,
   getHostListingById,
   createListing,

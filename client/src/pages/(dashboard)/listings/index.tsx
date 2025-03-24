@@ -10,12 +10,11 @@ import { DataTable } from "@/components/shared/data-table/DataTable";
 
 const ListingsPage = () => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: [queryKeys.LISTINGS],
-    queryFn: listingService.getListings,
+    queryKey: [queryKeys.DASHBOARD_LISTINGS],
+    queryFn: () => listingService.getListings(),
   });
 
   const listings = data?.data;
-  console.log(listings);
 
   if (isLoading) {
     <div className="flex flex-col gap-1 jkustify-center items-center mt-32">
@@ -45,9 +44,6 @@ const ListingsPage = () => {
     <div className="pt-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="font-bold text-2xl">Listings</h2>
-        {/* <Button variant={"outline"} asChild>
-          <Link to={paths.DASHBOARD.CATEGORIES.CREATE}>Create Category</Link>
-        </Button> */}
       </div>
       <div className="bg-white rounded-[10px]">
         <DataTable columns={columns} data={listings ? listings.listings : []} />

@@ -16,6 +16,7 @@ import HostListingsPage from "@/pages/(business)/host-listings";
 import HostCalendarPage from "@/pages/(business)/host-calendar";
 import ListingsPage from "@/pages/(dashboard)/listings";
 import HostBookingsPage from "@/pages/(business)/host-bookings";
+import ListingDetailsPage from "@/pages/(business)/details";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: paths.HOME,
         element: <HomePage />,
+      },
+      {
+        path: paths.LISTING.DETAIL,
+        element: <ListingDetailsPage />,
       },
       {
         path: "",
