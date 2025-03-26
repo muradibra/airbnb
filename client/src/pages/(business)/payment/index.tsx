@@ -10,22 +10,22 @@ import { useParams } from "react-router-dom";
 // import { ScrollToTop } from "@/components/shared/ScrollToTop";
 // import rentService from "@/services/rent";
 // import bookingService from "@/services/booking";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { clearCurrentBooking } from "@/store/booking/bookingSlice";
-import { RootState } from "@/store";
 import { paths } from "@/constants/paths";
+import { useAppSelector } from "@/hooks/redux";
 
 const PaymentPage = () => {
-  const currentBooking = useSelector(
-    (state: RootState) => state.booking.currentBooking
+  const currentBooking = useAppSelector(
+    (state) => state.booking.currentBooking
   );
   const navigate = useNavigate();
   // const location = useLocation();
   // const bookingData = location.state?.bookingData;
   // const { tempBookingId } = useParams();
   const dispatch = useDispatch();
-  const { listingId: idFromURL } = useParams<{ listingId: string }>();
+  const { id: idFromURL } = useParams<{ id: string }>();
 
   // Fetch temporary booking details
   // const { data, isLoading } = useQuery({
@@ -53,6 +53,8 @@ const PaymentPage = () => {
   useEffect(() => {
     // Check if there is a current booking
     if (!currentBooking) {
+      console.log("currentBooking", currentBooking);
+
       console.log("No current booking");
       window.history.back();
       // navigate(`/listings/${idFromURL}`);
@@ -62,6 +64,8 @@ const PaymentPage = () => {
     // Expire the booking after 15 minutes
     const age = Date.now() - new Date(currentBooking.createdAt).getTime();
     if (age > 15 * 60 * 1000) {
+      console.log("clearing current booking");
+
       dispatch(clearCurrentBooking());
       navigate(paths.HOME);
       return;
@@ -69,12 +73,14 @@ const PaymentPage = () => {
 
     // Prevent booking another listing without resetting
     if (currentBooking.listingId !== idFromURL) {
+      console.log(`---${currentBooking.listingId}---`, `${idFromURL}`);
+
       dispatch(clearCurrentBooking());
       console.log("Bookings do not match");
       window.history.back();
       // navigate(`/listings/${idFromURL}`);
     }
-  }, [currentBooking, idFromURL, navigate, dispatch]);
+  }, []);
 
   // if (isLoading) return <Spinner />;
 

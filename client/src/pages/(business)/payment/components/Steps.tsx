@@ -87,7 +87,8 @@ export const Steps = ({ bookingData }: { bookingData: BookingData }) => {
       }),
     onSuccess: () => {
       toast.success("Booking created successfully!");
-      navigate(paths.BOOKING);
+      // TODO: Redirect to bookings page
+      navigate(paths.HOME);
     },
     onError: (error: AxiosResponseError) => {
       toast.error(error.response?.data.message ?? "Something went wrong!");
