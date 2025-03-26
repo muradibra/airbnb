@@ -105,21 +105,6 @@ const listingSchema = new Schema({
     {
       type: Types.ObjectId,
       ref: "Booking",
-      // {
-      //   startDate: {
-      //     type: Date,
-      //     required: true,
-      //   },
-      //   endDate: {
-      //     type: Date,
-      //     required: true,
-      //   },
-      //   renter: {
-      //     type: Types.ObjectId,
-      //     ref: "User",
-      //     required: true,
-      //   },
-      // },
     },
   ],
   reviews: {

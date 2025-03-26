@@ -1,9 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { paths } from "@/constants/paths";
-import { useAppSelector } from "@/hooks/redux";
-import { DialogTypeEnum, useDialog } from "@/hooks/useDialog";
-import { selectAuth } from "@/store/auth";
-import { UserRole } from "@/types";
+// import { useAppSelector } from "@/hooks/redux";
+// import { useDialog } from "@/hooks/useDialog";
+// import { selectAuth } from "@/store/auth";
 import { Link, useSearchParams } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -11,8 +8,8 @@ import { queryKeys } from "@/constants/query-keys";
 import listingService from "@/services/listing";
 
 const HomePage = () => {
-  const { openDialog } = useDialog();
-  const { user } = useAppSelector(selectAuth);
+  // const { openDialog } = useDialog();
+  // const { user } = useAppSelector(selectAuth);
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
   const startDate = searchParams.get("startDate");
@@ -69,14 +66,14 @@ const HomePage = () => {
 
   return (
     <div className="p-4">
-      HomePage
+      {/* HomePage
       <Button onClick={() => openDialog(DialogTypeEnum.LOGIN)}>Log In</Button>
       {user?.role === UserRole.Admin && (
         <Link to={paths.DASHBOARD.CATEGORIES.LIST}>Go to Dashboard</Link>
       )}
       {user?.role === UserRole.Host && (
         <Link to={paths.HOST.CALENDAR}>Go to Host Calendar</Link>
-      )}
+      )} */}
       <div className="min-h-screen my-4">
         <InfiniteScroll
           dataLength={listings.length}

@@ -17,13 +17,15 @@ passport.deserializeUser(async function (id, done) {
       return done(null, false);
     }
     done(null, {
-      ...(user.toObject() ?? {}),
       _id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
       role: user.role as UserRole,
+      phoneNumber: user.phoneNumber,
       wishlist: Array.isArray(user.wishlist)
         ? user.wishlist.map((wish: any) => wish.toString())
         : [],
-      resetPasswordToken: user.resetPasswordToken ?? undefined,
       resetPasswordTokenExpires: user.resetPasswordTokenExpires?.toString(),
       createdAt: user.createdAt?.toString(),
       updatedAt: user.updatedAt?.toString(),
