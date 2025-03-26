@@ -21,7 +21,7 @@ const createBooking = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     var _a;
     try {
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
-        const { listingId, checkInDate, checkOutDate, totalPrice, guestCount } = req.body;
+        const { listingId, checkInDate, checkOutDate, totalPrice, guestCount, paymentStatus, } = req.body;
         const listing = yield listing_1.default.findById(listingId);
         if (!listing) {
             res.status(404).json({ message: "Listing not found" });
@@ -35,8 +35,8 @@ const createBooking = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             checkOutDate,
             totalPrice,
             guestCount,
+            paymentStatus,
             status: "pending",
-            paymentStatus: "pending",
         });
         res.status(201).json({ message: "Booking request created", booking });
     }
