@@ -16,6 +16,7 @@ exports.getUserBookings = exports.updateBookingStatus = exports.getHostBookings 
 const booking_1 = __importDefault(require("../mongoose/schemas/booking"));
 const listing_1 = __importDefault(require("../mongoose/schemas/listing"));
 const calendar_1 = __importDefault(require("../mongoose/schemas/calendar"));
+const user_1 = __importDefault(require("../mongoose/schemas/user"));
 const createBooking = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -35,6 +36,7 @@ const createBooking = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             totalPrice,
             guestCount,
             status: "pending",
+            paymentStatus: "pending",
         });
         res.status(201).json({ message: "Booking request created", booking });
     }
@@ -110,6 +112,13 @@ const updateBookingStatus = (req, res) => __awaiter(void 0, void 0, void 0, func
                 }
             });
             yield calendar.save();
+            const guest = yield user_1.default.findOne(booking.guest);
+            if (!guest) {
+                res.status(404).json({ message: "Guest not found" });
+                return;
+            }
+            guest.bookings.push(booking._id);
+            yield guest.save();
         }
         res.status(200).json({ message: `Booking ${status}`, booking });
     }

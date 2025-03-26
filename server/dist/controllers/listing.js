@@ -162,7 +162,7 @@ const getById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.params.id;
         const listing = yield listing_1.default.findById(id)
             .populate("category", "name description icon")
-            .populate("host", "name email")
+            .populate("host", "name email avatar")
             .populate("address")
             // .populate("amenities")
             // .populate("calendar")
@@ -178,6 +178,18 @@ const getById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(404).json({ message: "Calendar not found" });
             return;
         }
+        listing.images = listing.images.map((image) => {
+            return `${process.env.BASE_URL}/${image}`;
+        });
+        if (typeof listing.host === "object" && "avatar" in listing.host) {
+            listing.host.avatar = `${process.env.BASE_URL}/${listing.host.avatar}`;
+        }
+        // const listingNew = listing.toObject().map((l) => {
+        //   return {
+        //     ...l,
+        //     images: l.images.map((i) => `${process.env.BASE_URL}/${i}`),
+        //   };
+        // });
         res
             .status(200)
             .json({ message: "Listing details fetched", listing, calendar });

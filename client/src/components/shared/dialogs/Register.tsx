@@ -182,7 +182,11 @@ export const RegisterDialog = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button
+              type="submit"
+              className="w-full bg-[#FF5252] text-white cursor-pointer"
+              disabled={isPending}
+            >
               Register
             </Button>
           </form>

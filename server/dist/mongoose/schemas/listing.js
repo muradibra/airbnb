@@ -102,21 +102,6 @@ const listingSchema = new mongoose_1.Schema({
         {
             type: mongoose_1.Types.ObjectId,
             ref: "Booking",
-            // {
-            //   startDate: {
-            //     type: Date,
-            //     required: true,
-            //   },
-            //   endDate: {
-            //     type: Date,
-            //     required: true,
-            //   },
-            //   renter: {
-            //     type: Types.ObjectId,
-            //     ref: "User",
-            //     required: true,
-            //   },
-            // },
         },
     ],
     reviews: {

@@ -21,15 +21,26 @@ passport_1.default.serializeUser(function (user, done) {
 });
 passport_1.default.deserializeUser(function (id, done) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c;
         try {
             const user = yield user_1.default.findById(id).select("-password -__v -resetPasswordToken -resetPasswordTokenExpires");
             if (!user) {
                 return done(null, false);
             }
-            done(null, Object.assign(Object.assign({}, ((_a = user.toObject()) !== null && _a !== void 0 ? _a : {})), { _id: user._id.toString(), role: user.role, wishlist: Array.isArray(user.wishlist)
+            done(null, {
+                _id: user._id.toString(),
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar,
+                role: user.role,
+                phoneNumber: user.phoneNumber,
+                wishlist: Array.isArray(user.wishlist)
                     ? user.wishlist.map((wish) => wish.toString())
-                    : [], resetPasswordToken: (_b = user.resetPasswordToken) !== null && _b !== void 0 ? _b : undefined, resetPasswordTokenExpires: (_c = user.resetPasswordTokenExpires) === null || _c === void 0 ? void 0 : _c.toString(), createdAt: (_d = user.createdAt) === null || _d === void 0 ? void 0 : _d.toString(), updatedAt: (_e = user.updatedAt) === null || _e === void 0 ? void 0 : _e.toString() }));
+                    : [],
+                resetPasswordTokenExpires: (_a = user.resetPasswordTokenExpires) === null || _a === void 0 ? void 0 : _a.toString(),
+                createdAt: (_b = user.createdAt) === null || _b === void 0 ? void 0 : _b.toString(),
+                updatedAt: (_c = user.updatedAt) === null || _c === void 0 ? void 0 : _c.toString(),
+            });
         }
         catch (error) {
             done(error);

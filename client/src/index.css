@@ -20,6 +20,7 @@
   --breakpoint-md: 744px;
   --breakpoint-lg: 950px;
   --breakpoint-xl: 1128px;
+  --breakpoint-xxl: 1440px;
 }
 
 @plugin "tailwindcss-animate";
