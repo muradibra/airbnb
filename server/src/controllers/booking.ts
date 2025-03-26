@@ -7,8 +7,14 @@ import User from "../mongoose/schemas/user";
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const userId = req.user?._id;
-    const { listingId, checkInDate, checkOutDate, totalPrice, guestCount } =
-      req.body;
+    const {
+      listingId,
+      checkInDate,
+      checkOutDate,
+      totalPrice,
+      guestCount,
+      paymentStatus,
+    } = req.body;
 
     const listing = await Listing.findById(listingId);
     if (!listing) {
@@ -24,8 +30,8 @@ export const createBooking = async (req: Request, res: Response) => {
       checkOutDate,
       totalPrice,
       guestCount,
+      paymentStatus,
       status: "pending",
-      paymentStatus: "pending",
     });
 
     res.status(201).json({ message: "Booking request created", booking });
