@@ -189,7 +189,7 @@ const getById = async (req: Request, res: Response) => {
 
     const listing = await Listing.findById(id)
       .populate("category", "name description icon")
-      .populate("host", "name email")
+      .populate("host", "name email avatar")
       .populate("address")
       // .populate("amenities")
       // .populate("calendar")
@@ -208,6 +208,20 @@ const getById = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Calendar not found" });
       return;
     }
+
+    listing.images = listing.images.map((image) => {
+      return `${process.env.BASE_URL}/${image}`;
+    });
+
+    if (typeof listing.host === "object" && "avatar" in listing.host) {
+      listing.host.avatar = `${process.env.BASE_URL}/${listing.host.avatar}`;
+    }
+    // const listingNew = listing.toObject().map((l) => {
+    //   return {
+    //     ...l,
+    //     images: l.images.map((i) => `${process.env.BASE_URL}/${i}`),
+    //   };
+    // });
 
     res
       .status(200)

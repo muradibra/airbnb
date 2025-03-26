@@ -4,6 +4,7 @@ export interface IUser {
   email: string;
   avatar: string;
   wishlist: string[];
+  phoneNumber: string;
   password?: string;
   resetPasswordToken?: string;
   resetPasswordTokenExpires?: string;

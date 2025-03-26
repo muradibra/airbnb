@@ -113,7 +113,11 @@ export const LoginDialog = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button
+              type="submit"
+              className="w-full bg-[#FF5252] text-white cursor-pointer"
+              disabled={isPending}
+            >
               Sign In
             </Button>
           </form>

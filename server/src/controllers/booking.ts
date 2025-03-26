@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Booking from "../mongoose/schemas/booking";
 import Listing from "../mongoose/schemas/listing";
 import Calendar from "../mongoose/schemas/calendar";
+import User from "../mongoose/schemas/user";
 
 export const createBooking = async (req: Request, res: Response) => {
   try {
@@ -24,6 +25,7 @@ export const createBooking = async (req: Request, res: Response) => {
       totalPrice,
       guestCount,
       status: "pending",
+      paymentStatus: "pending",
     });
 
     res.status(201).json({ message: "Booking request created", booking });
@@ -112,6 +114,17 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
       });
 
       await calendar.save();
+
+      const guest = await User.findOne(booking.guest);
+
+      if (!guest) {
+        res.status(404).json({ message: "Guest not found" });
+        return;
+      }
+
+      guest.bookings.push(booking._id);
+
+      await guest.save();
     }
 
     res.status(200).json({ message: `Booking ${status}`, booking });
