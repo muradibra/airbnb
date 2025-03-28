@@ -9,6 +9,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 
 import queryClient from "./config/query";
 
+import "swiper/swiper-bundle.css";
+
 import "react-phone-number-input/style.css";
 
 createRoot(document.getElementById("root")!).render(

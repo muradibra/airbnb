@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { getCurrentUserAsync } from "@/store/auth";
 import Footer from "../footer";
 import Header from "../header";
+// import { ModalsContainer } from "@/components/modals";
 
 const RootLayout = () => {
   const dispatch = useAppDispatch();
@@ -16,7 +17,7 @@ const RootLayout = () => {
   }, []);
 
   return (
-    <div>
+    <>
       {/* <Navbar /> */}
       <Header />
       <main className="pt-32">
@@ -24,7 +25,7 @@ const RootLayout = () => {
       </main>
       <Dialogs />
       <Footer />
-    </div>
+    </>
   );
 };
 

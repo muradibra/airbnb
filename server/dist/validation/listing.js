@@ -64,12 +64,12 @@ exports.getListingsSchema = {
         isString: true,
         optional: true,
     },
-    adultCount: {
+    adults: {
         in: ["query"],
         isInt: true,
         optional: true,
     },
-    childrenCount: {
+    children: {
         in: ["query"],
         isInt: true,
         optional: true,
