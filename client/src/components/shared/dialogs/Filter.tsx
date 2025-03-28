@@ -22,17 +22,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
+import { amenities } from "@/constants";
 
-const amenities = [
-  "Wifi",
-  "TV",
-  "Kitchen",
-  "Washer",
-  "Parking",
-  "Air Conditioning",
-  "Pool",
-  "Hot Tub",
-];
+// const amenities = [
+//   "Wifi",
+//   "TV",
+//   "Kitchen",
+//   "Washer",
+//   "Parking",
+//   "Air Conditioning",
+//   "Pool",
+//   "Hot Tub",
+// ];
 
 const filterFormSchema = z.object({
   priceRange: z.array(z.number()).length(2),
@@ -47,6 +48,7 @@ type FilterFormValues = z.infer<typeof filterFormSchema>;
 export const Filter = () => {
   const { isOpen, closeDialog, type } = useDialog();
   const [searchParams, setSearchParams] = useSearchParams();
+  // const
 
   const form = useForm<FilterFormValues>({
     resolver: zodResolver(filterFormSchema),
@@ -64,7 +66,7 @@ export const Filter = () => {
     const priceRange = searchParams
       .get("priceRange")
       ?.split("-")
-      .map(Number) || [0, 1000];
+      .map(Number) || [0, 10000];
     const bedCount = Number(searchParams.get("bedCount")) || 1;
     const bedroomCount = Number(searchParams.get("bedroomCount")) || 1;
     const bathroomCount = Number(searchParams.get("bathroomCount")) || 1;
@@ -103,7 +105,7 @@ export const Filter = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={closeDialog}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] ">
         <DialogHeader>
           <DialogTitle>Filters</DialogTitle>
         </DialogHeader>
@@ -189,39 +191,39 @@ export const Filter = () => {
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="amenities"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amenities</FormLabel>
-                  <div className="grid grid-cols-2 gap-2">
-                    {amenities.map((amenity) => (
-                      <div
-                        key={amenity}
-                        className="flex items-center space-x-2"
-                      >
-                        <Checkbox
-                          checked={field.value.includes(amenity)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              field.onChange([...field.value, amenity]);
-                            } else {
-                              field.onChange(
-                                field.value.filter((a) => a !== amenity)
-                              );
-                            }
-                          }}
-                        />
-                        <label className="text-sm">{amenity}</label>
-                      </div>
-                    ))}
-                  </div>
-                </FormItem>
-              )}
-            />
-
+            <div className="max-h-[200px] overflow-y-auto">
+              <FormField
+                control={form.control}
+                name="amenities"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amenities</FormLabel>
+                    <div className="grid grid-cols-2 gap-2">
+                      {amenities.map((amenity) => (
+                        <div
+                          key={amenity}
+                          className="flex items-center space-x-2"
+                        >
+                          <Checkbox
+                            checked={field.value.includes(amenity)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                field.onChange([...field.value, amenity]);
+                              } else {
+                                field.onChange(
+                                  field.value.filter((a) => a !== amenity)
+                                );
+                              }
+                            }}
+                          />
+                          <label className="text-sm">{amenity}</label>
+                        </div>
+                      ))}
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={closeDialog}>
                 Cancel

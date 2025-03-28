@@ -76,7 +76,7 @@ function Header() {
 
   return (
     <header
-      className={`fixed w-full z-50 transition-all duration-300 ${
+      className={`fixed w-full z-50 transition-all duration-300 bg-white ${
         isScrolled ? "bg-white shadow-md py-4" : "bg-transparent py-6"
       }`}
     >
@@ -145,10 +145,7 @@ function Header() {
                 {!loading && user ? (
                   <>
                     <DropdownMenuItem>
-                      <Link
-                        className="w-full h-full"
-                        to={`/profile/${user._id}`}
-                      >
+                      <Link className="w-full h-full" to={`/profile`}>
                         Profile
                       </Link>
                     </DropdownMenuItem>
@@ -202,8 +199,6 @@ function Header() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* <HeaderProfile /> */}
           </div>
         </div>
 

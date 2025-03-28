@@ -295,8 +295,6 @@ const create = async (req: Request, res: Response) => {
       file.path.replace(/\\/g, "/")
     );
 
-    console.log(images);
-
     let location = await Location.findOne({
       street: address.street,
       city: address.city,
@@ -467,12 +465,7 @@ const remove = async (req: Request, res: Response) => {
     const id = req.params.id;
     const user = req.user?._id;
 
-    const listing = await Listing.findOneAndDelete({ _id: id, host: user });
-
-    if (listing?.host.toString() !== user?.toString()) {
-      res.status(403).json({ message: "Unauthorized" });
-      return;
-    }
+    const listing = await Listing.findOneAndDelete({ _id: id });
 
     if (!listing) {
       res.status(404).json({ message: "Listing not found" });

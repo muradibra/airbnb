@@ -41,7 +41,7 @@ const DashboardUsersPage = () => {
   return (
     <div className="pt-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-white font-bold text-2xl">Users</h2>
+        <h2 className="font-bold text-2xl">Users</h2>
       </div>
       <div className="bg-white rounded-md shadow-md">
         <DataTable columns={columns} data={users} />

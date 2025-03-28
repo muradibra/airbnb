@@ -25,15 +25,19 @@ const authorize = (options) => {
                 res.status(401).json({ message: "Unauthorized!" });
                 return;
             }
-            if (isAdmin && ((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== user_1.UserRole.ADMIN) {
-                res.status(403).json({ message: "Forbidden!" });
-                return;
+            if (!isAdmin && !isHost) {
+                return next();
             }
-            if (isHost && ((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) !== user_1.UserRole.HOST) {
-                res.status(403).json({ message: "Forbidden!" });
-                return;
+            // Allow access if the user is an admin and admin access is required
+            if (isAdmin && ((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) === user_1.UserRole.ADMIN) {
+                return next();
             }
-            next();
+            // Allow access if the user is a host and host access is required
+            if (isHost && ((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) === user_1.UserRole.HOST) {
+                return next();
+            }
+            // If neither condition is met, deny access
+            res.status(403).json({ message: "Forbidden! Insufficient permissions!" });
         }
         catch (err) {
             console.log(err);

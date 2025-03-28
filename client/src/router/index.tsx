@@ -42,7 +42,6 @@ export const router = createBrowserRouter([
           },
         ],
       },
-
       {
         path: "",
         element: <DashboardLayout />,
@@ -97,6 +96,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
   {
     path: "*",
     element: <NotFound />,
