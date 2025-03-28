@@ -16,5 +16,5 @@ router.get("/host/listing/:id", (0, auth_1.authorize)({ isHost: true }), listing
 router.get("/:id", listing_2.default.getById);
 router.post("/create", (0, auth_1.authorize)({ isHost: true }), uploadBnb_1.uploadBnb.array("images", 100), (0, validate_1.default)(listing_1.createListingSchema), listing_2.default.create);
 router.put("/update/:id", (0, auth_1.authorize)({ isHost: true }), uploadBnb_1.uploadBnb.any(), (0, validate_1.default)(listing_1.createListingSchema), listing_2.default.update);
-router.delete("/delete/:id", (0, auth_1.authorize)({ isHost: true }), listing_2.default.remove);
+router.delete("/delete/:id", (0, auth_1.authorize)({ isHost: true, isAdmin: true }), listing_2.default.remove);
 exports.default = router;
