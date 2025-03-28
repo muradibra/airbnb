@@ -12,6 +12,11 @@ const makeHost = async (req: Request, res: Response) => {
       { new: true }
     );
 
+    if (!updatedUser) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
     res.status(200).json({
       message: "Congratulations! You are now a host",
       user: updatedUser,

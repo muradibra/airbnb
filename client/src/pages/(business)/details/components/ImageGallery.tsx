@@ -4,9 +4,6 @@ import { Pagination } from "swiper/modules";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 
-// Import Swiper and Lightbox styles
-import "swiper/swiper-bundle.css";
-// import "swiper/css/pagination";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 

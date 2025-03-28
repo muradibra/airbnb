@@ -17,6 +17,7 @@ import HostCalendarPage from "@/pages/(business)/host-calendar";
 import ListingsPage from "@/pages/(dashboard)/listings";
 import HostBookingsPage from "@/pages/(business)/host-bookings";
 import ListingDetailsPage from "@/pages/(business)/details";
+import NotFound from "@/pages/(business)/not-found";
 
 export const router = createBrowserRouter([
   {
@@ -95,5 +96,9 @@ export const router = createBrowserRouter([
         element: <HostBookingsPage />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);

@@ -4,18 +4,17 @@ import { CreateListing, CreateListingData, GetHostListings } from "./types";
 type GetAllListingsPayload = {
   skip?: number;
   take?: number;
-  category: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  bedroomCount: string;
-  bedCount: string;
-  bathroomCount: string;
-  // maxGuestCount: string;
-  priceMin: string;
-  priceMax: string;
+  category?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+  guests?: number;
+  priceRange?: string;
+  bedroomCount?: string | number;
+  bedCount?: string | number;
+  bathroomCount?: string | number;
+  amenities?: string[];
   // sort: string;
-  amenities: string[];
 };
 
 const getListings = async (data?: GetAllListingsPayload) => {
@@ -24,18 +23,34 @@ const getListings = async (data?: GetAllListingsPayload) => {
   if (data?.take) params.append("take", data.take.toString());
   if (data?.category) params.append("category", data.category);
   if (data?.location) params.append("location", data.location);
-  if (data?.startDate) params.append("startDate", data.startDate);
-  if (data?.endDate) params.append("endDate", data.endDate);
-  if (data?.bedroomCount) params.append("bedroomCount", data.bedroomCount);
-  if (data?.bedCount) params.append("bedCount", data.bedCount);
-  if (data?.bathroomCount) params.append("bathroomCount", data.bathroomCount);
+  console.log("data?.location inside getListings service", data?.location);
+
+  if (data?.startDate) {
+    console.log(data?.startDate);
+
+    params.append("startDate", data.startDate);
+  }
+  if (data?.endDate) {
+    console.log(data?.endDate);
+
+    params.append("endDate", data.endDate);
+  }
+  if (data?.guests) params.append("guests", String(data.guests));
+
+  if (data?.priceRange) params.append("priceRange", data.priceRange);
+  if (data?.bedroomCount)
+    params.append("bedroomCount", String(data.bedroomCount));
+  if (data?.bedCount) params.append("bedCount", String(data.bedCount));
+  if (data?.bathroomCount)
+    params.append("bathroomCount", String(data.bathroomCount));
   // if(data?.maxGuestCount) params.append("maxGuestCount", data.maxGuestCount);
-  if (data?.priceMin) params.append("priceMin", data.priceMin);
-  if (data?.priceMax) params.append("priceMax", data.priceMax);
+  // if (data?.priceMin) params.append("priceMin", data.priceMin);
+  // if (data?.priceMax) params.append("priceMax", data.priceMax);
   // if(data?.sort) params.append("sort", data.sort);
-  data?.amenities.forEach((amenity) => {
-    params.append("amenities", amenity);
-  });
+  if (data?.amenities)
+    data?.amenities.forEach((amenity) => {
+      params.append("amenities", amenity);
+    });
 
   return axiosInstance.get(`/listing/all?${params.toString()}`);
 };
