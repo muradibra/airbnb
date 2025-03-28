@@ -10,18 +10,16 @@ import { useEffect } from "react";
 import BookingSection from "./components/BookingSection";
 import { useAppDispatch } from "@/hooks/redux";
 import { clearCurrentBooking } from "@/store/booking/bookingSlice";
+import { HashLoader } from "react-spinners";
 
 const ListingDetailsPage = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
 
-  const { data: listingData } = useQuery({
+  const { data: listingData, isLoading: listingLoading } = useQuery({
     queryKey: ["listing", id],
     queryFn: () => listingService.getListingById(id!),
   });
-
-  const listing = listingData?.data.listing;
-  const listingCalendar = listingData?.data.calendar;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,6 +28,17 @@ const ListingDetailsPage = () => {
   useEffect(() => {
     dispatch(clearCurrentBooking());
   }, [id]);
+
+  if (listingLoading) {
+    return (
+      <div className="text-4xl z-[9999] flex items-center justify-center absolute top-0 left-0 right-0 bottom-0 min-h-screen bg-white">
+        <HashLoader color="#FF5252" size={75} />
+      </div>
+    );
+  }
+
+  const listing = listingData?.data.listing;
+  const listingCalendar = listingData?.data.calendar;
 
   return (
     <div className="px-[24px] md:px-[40px] xxl:px-[80px] ">
@@ -161,63 +170,45 @@ const ListingDetailsPage = () => {
       </div>
 
       {/* Reviews section */}
-      {listing?.reviews.length > 0 ? (
-        <div className="py-12 border-t-[1px] border-t-[#ddd]">
-          <div className="flex flex-col gap-3 mb-10">
-            <p className="text-2xl font-bold text-[#222]">
-              {listing?.reviews.length} reviews
-            </p>
-            <p className="text-lg text-[#6a6a6a] font-medium">
-              Average rating will appear after 3 reviews
-            </p>
-          </div>
-          <div className="flex overflow-x-auto hide-scrollbar sm:grid  sm:grid-cols-1  md:grid-cols-2 gap-4 sm:gap-8 md:gap-24">
-            {listing?.reviews.map((review: any, index: number) => (
-              <div className="flex flex-col gap-4" key={index}>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden">
-                    <img
-                      src={review.reviewer.avatar}
-                      alt="Reviewer"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-base font-medium text-[#222]">
-                      {review.reviewer.name}
-                    </p>
-                    <p className="text-sm font-medium text-[#6a6a6a]">
-                      {review.date}
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-base font-normal text-[#222]">
-                    {review.comment}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="py-12">
-          <p className="text-2xl font-bold text-[#222]">No reviews yet</p>
-        </div>
-      )}
-      {/* <div className="py-12 border-t-[1px] border-t-[#ddd]">
+
+      <div className="py-12 border-t-[1px] border-t-[#ddd]">
         <div className="flex flex-col gap-3 mb-10">
-          <p className="text-2xl font-bold text-[#222]">2 reviews</p>
+          <p className="text-2xl font-bold text-[#222]">
+            {listing?.reviews.length} reviews
+          </p>
           <p className="text-lg text-[#6a6a6a] font-medium">
             Average rating will appear after 3 reviews
           </p>
         </div>
         <div className="flex overflow-x-auto hide-scrollbar sm:grid  sm:grid-cols-1  md:grid-cols-2 gap-4 sm:gap-8 md:gap-24">
-          {Array.from({ length: 2 }).map((_, index) => (
-            <ReviewCard key={index} />
+          {listing?.reviews.map((review: any, index: number) => (
+            <div className="flex flex-col gap-4" key={index}>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full overflow-hidden">
+                  <img
+                    src={review.reviewer.avatar}
+                    alt="Reviewer"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="text-base font-medium text-[#222]">
+                    {review.reviewer.name}
+                  </p>
+                  <p className="text-sm font-medium text-[#6a6a6a]">
+                    {review.date}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p className="text-base font-normal text-[#222]">
+                  {review.comment}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
-      </div> */}
+      </div>
 
       {/* Map section */}
       <div className="border-t-[1px] border-t-[#ddd] py-12">
@@ -229,29 +220,6 @@ const ListingDetailsPage = () => {
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
-        {/* <div className="mt-10 flex flex-col gap-3">
-          <p className="text-base font-medium text-[#222]">Famagusta, Cyprus</p>
-          <p className="text-base text-[#6a6a6a] leading-7 line-clamp-3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur
-            provident nesciunt dolore, illo repellendus molestiae sunt facilis
-            velit repudiandae? Tenetur inventore ex consectetur magni neque
-            molestiae excepturi praesentium in voluptatem officiis repudiandae
-            culpa sequi, assumenda blanditiis ipsam odio maxime amet ducimus qui
-            tempora quaerat. Vitae id odit nesciunt non hic iusto impedit, illum
-            eaque qui, dolorum magni, at enim quaerat voluptates nemo error.
-            Reprehenderit eveniet libero voluptate, quidem laborum, debitis
-            pariatur ut quasi facere dolorum sed veniam excepturi fuga
-            distinctio odit non ipsum quo. Voluptatem nesciunt amet aut aliquam
-            rem eligendi aspernatur excepturi perspiciatis deleniti! Quae
-            numquam magni rerum accusantium.
-          </p>
-          <div>
-            <button className="text-lg underline text-[#222] cursor-pointer font-medium mt-2 flex items-center gap-1 ">
-              <span>Show more</span>
-              <RiArrowDropRightLine className="text-2xl text-[#222]" />
-            </button>
-          </div>
-        </div> */}
       </div>
     </div>
   );

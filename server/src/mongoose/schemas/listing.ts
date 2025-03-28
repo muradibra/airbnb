@@ -3,13 +3,16 @@ import mongoose, { Schema, Types, Document } from "mongoose";
 interface IListing extends Document {
   title: string;
   description: string;
-  address: {
-    street: string;
-    city: string;
-    state?: string;
-    country: string;
-    zipCode?: string;
-  };
+  address:
+    | Types.ObjectId
+    | {
+        _id: string;
+        street: string;
+        city: string;
+        state?: string;
+        country: string;
+        zipCode?: string;
+      };
   category:
     | Types.ObjectId
     | { _id: string; name: string; description: string; icon: string };

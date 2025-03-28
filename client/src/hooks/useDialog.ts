@@ -7,6 +7,8 @@ export enum DialogTypeEnum {
   EDIT_LISTING = "EDIT_LISTING",
   // FORGOT_PASSWORD = "FORGOT_PASSWORD",
   // RESET_PASSWORD = "RESET_PASSWORD",
+  SEARCH = "SEARCH",
+  FILTER = "FILTER",
 }
 
 interface DialogState {

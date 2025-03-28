@@ -19,6 +19,7 @@ const wishlist_1 = __importDefault(require("./routes/wishlist"));
 const user_1 = __importDefault(require("./routes/user"));
 const calendar_1 = __importDefault(require("./routes/calendar"));
 const booking_1 = __importDefault(require("./routes/booking"));
+const location_1 = __importDefault(require("./routes/location"));
 const app = (0, express_1.default)();
 app.set("trust proxy", 1);
 app.use((0, cors_1.default)({
@@ -49,6 +50,7 @@ app.use("/wishlist", wishlist_1.default);
 app.use("/user", user_1.default);
 app.use("/calendar", calendar_1.default);
 app.use("/booking", booking_1.default);
+app.use("/location", location_1.default);
 app.listen(process.env.PORT, () => {
     console.log(`server is running on port ${process.env.PORT}`);
 });

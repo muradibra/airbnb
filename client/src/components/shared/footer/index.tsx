@@ -1,15 +1,10 @@
 import FooterNavigation from "./components/FooterNavigation";
 import FooterSocialMedia from "./components/FooterSocialMedia";
 
-// import FooterExplore from "./components/FooterExplore";
-// import FooterNavigationHeader from "./components/FooterNavigationHeader";
-
 function Footer() {
   return (
     <footer>
-      <div className="bg-[#f7f7f7] px-[24px] lg:px-[32px]">
-        {/* <FooterNavigationHeader /> */}
-        {/* <FooterExplore /> */}
+      <div className="bg-[#f7f7f7] px-[24px] md:px-[40px] xxl:px-[80px]">
         <FooterNavigation />
         <FooterSocialMedia />
       </div>

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import logo from "@/assets/images/airbnb-host-icon.png";
+import { useSearchParams } from "react-router-dom";
+import { format } from "date-fns";
 
 import {
   DropdownMenu,
@@ -16,12 +18,44 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { logoutAsync, selectAuth } from "@/store/auth";
 import { DialogTypeEnum, useDialog } from "@/hooks/useDialog";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import roleService from "@/services/role";
+import { UserRole } from "@/types";
 
 function Header() {
   const { user, loading } = useAppSelector(selectAuth);
   const { openDialog } = useDialog();
   const [isScrolled, setIsScrolled] = useState(false);
   const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
+
+  const location = searchParams.get("location");
+  const startDate = searchParams.get("startDate");
+  const endDate = searchParams.get("endDate");
+  const guests = searchParams.get("guests");
+
+  const { mutate: turnHost, isPending: turnHostPending } = useMutation({
+    mutationFn: roleService.makeHost,
+    onSuccess: ({ data }) => {
+      toast.success(data.message ?? "You are now a host!");
+    },
+  });
+
+  const formatDateRange = () => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return `${format(start, "MMM d")} - ${format(end, "MMM d")}`;
+    }
+    return "Any week";
+  };
+
+  const formatGuests = () => {
+    if (guests) {
+      return `${guests} guest${Number(guests) > 1 ? "s" : ""}`;
+    }
+    return "Add guests";
+  };
 
   console.log("user", user);
 
@@ -63,17 +97,20 @@ function Header() {
           {/* Search Bar - Hidden on mobile, visible on tablet and up */}
           <div className="block flex-1 max-w-2xl">
             <div className="flex items-center justify-center">
-              <button className="flex items-center gap-2 md:gap-4 px-4 md:px-6 py-2 md:py-3 bg-white rounded-full border hover:shadow-md transition-all cursor-pointer">
-                <span className="font-medium text-sm md:text-base">
-                  Anywhere
+              <button
+                onClick={() => openDialog(DialogTypeEnum.SEARCH)}
+                className="flex items-center gap-2 md:gap-4 px-4 md:px-6 py-2 md:py-3 bg-white rounded-full border hover:shadow-md transition-all cursor-pointer"
+              >
+                <span className="hidden sm:block font-medium text-sm md:text-base">
+                  {location || "Anywhere"}
                 </span>
                 <span className="h-5 w-[1px] bg-gray-300 hidden sm:block"></span>
                 <span className="font-medium text-sm md:text-base hidden sm:block">
-                  Any week
+                  {formatDateRange()}
                 </span>
                 <span className="h-5 w-[1px] bg-gray-300 hidden md:block"></span>
                 <span className="text-gray-500 text-sm md:text-base hidden md:block">
-                  Add guests
+                  {formatGuests()}
                 </span>
                 <div className="w-6 h-6 md:w-8 md:h-8 bg-[#FF5252] rounded-full flex items-center justify-center">
                   <FaSearch className="text-white text-sm md:text-base" />
@@ -103,25 +140,60 @@ function Header() {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {!loading && user ? (
                   <>
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Manage Listings</DropdownMenuItem>
-                    <DropdownMenuItem>test</DropdownMenuItem>
-                    <DropdownMenuItem onClick={logout}>
+                    <DropdownMenuItem>
+                      <Link
+                        className="w-full h-full"
+                        to={`/profile/${user._id}`}
+                      >
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+
+                    {user.role === UserRole.Guest && (
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => turnHost(user._id)}
+                        disabled={turnHostPending}
+                      >
+                        {turnHostPending ? "Loading..." : "Become a host"}
+                      </DropdownMenuItem>
+                    )}
+                    {/* <DropdownMenuItem>Airbnb your home</DropdownMenuItem> */}
+                    {user.role === "host" && (
+                      <DropdownMenuItem>
+                        <Link className="w-full h-full" to="/host/listings">
+                          My Listings
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {user.role === "admin" && (
+                      <DropdownMenuItem>
+                        <Link to="/dashboard" className="w-full h-full">
+                          Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={logout}
+                    >
                       Log Out
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <>
                     <DropdownMenuItem
+                      className="cursor-pointer"
                       onClick={() => openDialog(DialogTypeEnum.LOGIN)}
                     >
                       Log in
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      className="cursor-pointer"
                       onClick={() => openDialog(DialogTypeEnum.REGISTER)}
                     >
                       Register

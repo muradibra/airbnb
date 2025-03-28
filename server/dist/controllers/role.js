@@ -19,6 +19,10 @@ const makeHost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
         const updatedUser = yield user_1.default.findByIdAndUpdate({ _id: id }, { role: user_2.UserRole.HOST }, { new: true });
+        if (!updatedUser) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
         res.status(200).json({
             message: "Congratulations! You are now a host",
             user: updatedUser,

@@ -22,57 +22,46 @@ const review_1 = __importDefault(require("../mongoose/schemas/review"));
 // import Wishlist from "../mongoose/schemas/wishlist";
 const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { category, skip = 0, take = 12, startDate, endDate, bedroomCount, bathroomCount, amenities, priceRange, adultCount, childrenCount, infantsCount, petsCount, location, sortBy = "createdAt", sortOrder = "desc", } = req.matchedData;
-        const filterQuery = {
-            $or: [],
-            $and: [],
-        };
+        const { category, skip = 0, take = 12, startDate, endDate, bedroomCount, bathroomCount, amenities, priceRange, adults, children, location, sortBy = "createdAt", sortOrder = "desc", } = req.matchedData;
+        const { guests } = req.query;
+        const filterQuery = {};
         if (category) {
             filterQuery.category = category;
         }
-        // Filter by location
-        if (typeof location === "string") {
-            filterQuery.$and.push({
-                $or: [
-                    {
-                        // No calendar entries exist for these dates
-                        _id: {
-                            $nin: yield calendar_1.default.distinct("listing", {
-                                dates: {
-                                    $elemMatch: {
-                                        date: {
-                                            $gte: new Date(startDate),
-                                            $lte: new Date(endDate),
-                                        },
-                                        $or: [{ isBlocked: true }, { isBooked: true }],
-                                    },
-                                },
-                            }),
-                        },
-                    },
-                    {
-                        // No bookings exist for these dates
-                        _id: {
-                            $nin: yield booking_1.default.distinct("listing", {
-                                status: { $ne: "cancelled" },
-                                checkInDate: { $lte: new Date(endDate) },
-                                checkOutDate: { $gte: new Date(startDate) },
-                            }),
-                        },
-                    },
-                ],
-            });
+        // Filter by location ID
+        if (location) {
+            filterQuery.address = location;
         }
         // Filter by date availability
-        if (typeof startDate === "string" && typeof endDate === "string") {
-            filterQuery.availability = {
-                $not: {
-                    $elemMatch: {
-                        startDate: { $lte: new Date(endDate) },
-                        endDate: { $gte: new Date(startDate) },
+        if (startDate && endDate) {
+            filterQuery.$and = [
+                {
+                    // No calendar entries exist for these dates
+                    _id: {
+                        $nin: yield calendar_1.default.distinct("listing", {
+                            dates: {
+                                $elemMatch: {
+                                    date: {
+                                        $gte: new Date(startDate),
+                                        $lte: new Date(endDate),
+                                    },
+                                    $or: [{ isBlocked: true }, { isBooked: true }],
+                                },
+                            },
+                        }),
                     },
                 },
-            };
+                {
+                    // No bookings exist for these dates
+                    _id: {
+                        $nin: yield booking_1.default.distinct("listing", {
+                            status: { $ne: "cancelled" },
+                            checkInDate: { $lte: new Date(endDate) },
+                            checkOutDate: { $gte: new Date(startDate) },
+                        }),
+                    },
+                },
+            ];
         }
         // Filter by bedroomCount and bathroomCount
         if (bedroomCount) {
@@ -90,22 +79,10 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const [minPrice, maxPrice] = priceRange.split("-").map(Number);
             filterQuery.pricePerNight = { $gte: minPrice, $lte: maxPrice };
         }
-        // Filter by guest restrictions
-        if (adultCount) {
-            filterQuery["guestRestrictions.maxAdults"] = { $gte: Number(adultCount) };
-        }
-        if (childrenCount) {
-            filterQuery["guestRestrictions.maxChildren"] = {
-                $gte: Number(childrenCount),
-            };
-        }
-        if (infantsCount) {
-            filterQuery["guestRestrictions.maxInfants"] = {
-                $gte: Number(infantsCount),
-            };
-        }
-        if (petsCount) {
-            filterQuery["guestRestrictions.maxPets"] = { $gte: Number(petsCount) };
+        // Filter by guest count (adults + children)
+        // const totalGuestCount = Number(adults) + Number(children);
+        if (guests && typeof guests === "string") {
+            filterQuery.maxGuestCount = Number(guests);
         }
         // Sorting
         const sortQuery = {};
@@ -184,12 +161,6 @@ const getById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (typeof listing.host === "object" && "avatar" in listing.host) {
             listing.host.avatar = `${process.env.BASE_URL}/${listing.host.avatar}`;
         }
-        // const listingNew = listing.toObject().map((l) => {
-        //   return {
-        //     ...l,
-        //     images: l.images.map((i) => `${process.env.BASE_URL}/${i}`),
-        //   };
-        // });
         res
             .status(200)
             .json({ message: "Listing details fetched", listing, calendar });

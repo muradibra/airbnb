@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import {
@@ -19,7 +18,6 @@ import queryClient from "@/config/query";
 import { format } from "date-fns";
 
 const HostBookingsPage = () => {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: [queryKeys.HOST_BOOKINGS],
     queryFn: bookingService.getHostBookings,
@@ -126,7 +124,7 @@ const HostBookingsPage = () => {
                       booking.guestsCount?.pets}
                   </td>
                   <td className="px-6 py-4 text-center">
-                    {booking.totalPrice}
+                    ${booking.totalPrice}
                   </td>
                   <td className={`px-6 py-4 text-center`}>
                     {booking.paymentStatus}
@@ -143,10 +141,7 @@ const HostBookingsPage = () => {
                     {booking.status}
                   </td>
                   <td className="px-6 py-4">
-                    <Popover
-                      open={isPopoverOpen}
-                      onOpenChange={setIsPopoverOpen}
-                    >
+                    <Popover>
                       <PopoverTrigger asChild className="cursor-pointer">
                         <PenIcon className="w-5 h-5" />
                       </PopoverTrigger>
@@ -163,7 +158,6 @@ const HostBookingsPage = () => {
                                   bookingId: booking._id,
                                   status: "approved",
                                 });
-                                setIsPopoverOpen(false);
                               }}
                               className="bg-green-500 text-white w-full"
                             >
@@ -178,7 +172,6 @@ const HostBookingsPage = () => {
                                   bookingId: booking._id,
                                   status: "rejected",
                                 });
-                                setIsPopoverOpen(false);
                               }}
                             >
                               Reject

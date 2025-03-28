@@ -1,4 +1,5 @@
 export const queryKeys = {
+  CATEGORIES: "categories",
   LISTINGS: "listings",
   DASHBOARD_LISTINGS: "listings",
   LISTING_BY_ID: "listing-by-id",

@@ -122,7 +122,7 @@ export type Booking = {
 
 export enum UserRole {
   Admin = "admin",
-  User = "user",
+  Guest = "guest",
   Host = "host",
 }
 
