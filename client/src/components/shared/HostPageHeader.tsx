@@ -22,7 +22,7 @@ const HostPageHeader = () => {
       <div className="header-inner flex justify-between items-center">
         <Link to={paths.HOST.MAIN} className="logo w-[46px] h-[53px]">
           <img
-            src="/src/assets/images/airbnb-host-icon.png"
+            src="/images/airbnb-host-icon.png"
             className="w-full h-full object-cover"
             alt="Logo"
           />
@@ -126,6 +126,11 @@ const HostPageHeader = () => {
               <DropdownMenuItem className="cursor-pointer hover:bg-[#e8e8e8]">
                 <NavLink to={paths.HOST.LISTINGS.MAIN} className="block w-full">
                   Profile
+                </NavLink>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer hover:bg-[#e8e8e8]">
+                <NavLink to={paths.HOME} className="block w-full">
+                  Back to Home
                 </NavLink>
               </DropdownMenuItem>
               <DropdownMenuItem

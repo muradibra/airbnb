@@ -10,6 +10,7 @@ import { DashboardSidebar } from "../DashboardSidebar";
 
 const DashboardLayout = () => {
   const { user, loading } = useAppSelector(selectAuth);
+  console.log(loading);
 
   if (loading) {
     return (

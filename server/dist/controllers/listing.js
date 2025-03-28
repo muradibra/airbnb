@@ -234,7 +234,6 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const { title, description, category, address, amenities, bedroomCount, bedCount, bathroomCount, maxGuestCount, pricePerNight, } = req.matchedData;
         const images = req.files.map((file) => file.path.replace(/\\/g, "/"));
-        console.log(images);
         let location = yield location_1.default.findOne({
             street: address.street,
             city: address.city,
@@ -371,11 +370,7 @@ const remove = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
         const user = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
-        const listing = yield listing_1.default.findOneAndDelete({ _id: id, host: user });
-        if ((listing === null || listing === void 0 ? void 0 : listing.host.toString()) !== (user === null || user === void 0 ? void 0 : user.toString())) {
-            res.status(403).json({ message: "Unauthorized" });
-            return;
-        }
+        const listing = yield listing_1.default.findOneAndDelete({ _id: id });
         if (!listing) {
             res.status(404).json({ message: "Listing not found" });
             return;

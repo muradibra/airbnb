@@ -15,17 +15,22 @@ export const authorize = (options?: {
         return;
       }
 
-      if (isAdmin && req.user?.role !== UserRole.ADMIN) {
-        res.status(403).json({ message: "Forbidden!" });
-        return;
+      if (!isAdmin && !isHost) {
+        return next();
       }
 
-      if (isHost && req.user?.role !== UserRole.HOST) {
-        res.status(403).json({ message: "Forbidden!" });
-        return;
+      // Allow access if the user is an admin and admin access is required
+      if (isAdmin && req.user?.role === UserRole.ADMIN) {
+        return next();
       }
 
-      next();
+      // Allow access if the user is a host and host access is required
+      if (isHost && req.user?.role === UserRole.HOST) {
+        return next();
+      }
+
+      // If neither condition is met, deny access
+      res.status(403).json({ message: "Forbidden! Insufficient permissions!" });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Internal server error!" });

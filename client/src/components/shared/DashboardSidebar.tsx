@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { paths } from "@/constants/paths";
 import { Link } from "react-router-dom";
+import { IoArrowBack } from "react-icons/io5";
 
 export const SideBarItems = [
   {
@@ -112,7 +113,7 @@ export const SideBarItems = [
 export const DashboardSidebar = () => {
   return (
     <Sidebar className="">
-      <SidebarGroupContent className="">
+      <SidebarGroupContent className="pt-[112px]">
         <SidebarGroup>
           <SidebarGroupLabel className="">Airbnb Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -130,6 +131,17 @@ export const DashboardSidebar = () => {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    className="hover:text-[#ff385c]! transition-all duration-200"
+                    to={paths.HOME}
+                  >
+                    <IoArrowBack />
+                    <span>Back To Home</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

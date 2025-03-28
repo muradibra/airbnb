@@ -35,7 +35,7 @@ router.put(
 );
 router.delete(
   "/delete/:id",
-  authorize({ isHost: true }),
+  authorize({ isHost: true, isAdmin: true }),
   listingController.remove
 );
 
