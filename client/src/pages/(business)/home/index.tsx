@@ -63,7 +63,7 @@ const HomePage = () => {
     queryFn: ({ pageParam }: { pageParam: number }) =>
       listingService.getListings({
         skip: pageParam,
-        take: 12,
+        take: 8,
         category: category ?? "",
         location: location ?? "",
         startDate: startDate ?? "",
@@ -157,15 +157,6 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-
-      {/* HomePage
-      <Button onClick={() => openDialog(DialogTypeEnum.LOGIN)}>Log In</Button>
-      {user?.role === UserRole.Admin && (
-        <Link to={paths.DASHBOARD.CATEGORIES.LIST}>Go to Dashboard</Link>
-      )}
-      {user?.role === UserRole.Host && (
-        <Link to={paths.HOST.CALENDAR}>Go to Host Calendar</Link>
-      )} */}
       <div className="my-4 listings-container">
         <InfiniteScroll
           dataLength={listings.length}
@@ -188,7 +179,7 @@ const HomePage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
             {listings.map((listing) => (
               <div key={listing._id} className="block relative">
-                <div className="absolute top-2 right-2 z-50 cursor-pointer p-2">
+                <div className="absolute top-2 right-2 z-[10] cursor-pointer p-2">
                   <HeartIcon className="w-6 h-6 text-white shadow-2xl" />
                 </div>
                 <Link
